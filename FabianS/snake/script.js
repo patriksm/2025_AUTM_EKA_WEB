@@ -14,16 +14,27 @@ function getRandomIntProfessor(fieldsize){
     // denom = 1 .... 17
     // result = nominator / denom 
 }
-let myPlayground = new Image(); // create an empty Image object
-myPlayground.src = "img/ground.png"; // we set the property src equal to the path to the file we want to diplay 
+
+// create an empty Image object
+let myPlayground = new Image(); 
+// we set the property src equal to the path to the file we want to diplay 
+myPlayground.src = "img/ground.png"; 
 let myCarrot = new Image();
 myCarrot.src = "img/carrot.png";
 
-let box = 32;
+let box = myCarrot.naturalWidth;
 let food_coords = {
-    x: (Math.trunc(17*Math.random())+ 1)*box,
-    y: (Math.trunc(15*Math.random())+ 3)*box, 
-    // y: getRandomInt(0, 17)*box, 
+    // Es hat 17 Felder, daher 17. 
+    // Math. random liefert einen Wert zwischen 0 ... 1 
+    // Da ich ab dem ersten Feld starten möchte die + 1
+    x: (
+        Math.trunc(
+            17 * Math.random()
+        ) + 1) * box,
+
+    y: (
+        Math.trunc(15 * Math.random()
+    ) + 3) * box, 
     type: "carrot"
 }
 

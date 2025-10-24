@@ -1,0 +1,28 @@
+
+
+#red {
+    background: red;
+    text-align: center;
+}
+
+#teal{
+    background-color: teal;
+    text-align: right;
+    color: thistle;
+}
+
+.onestyle{
+    background:rgb(59, 196, 196);
+    text-transform: uppercase;
+    color: aqua;
+}s
+
+#let_it_happen{
+    background-color: rgb(116, 183, 238);
+    size: 1cm;
+    font-style: italic;
+    text-align: center;
+    text-decoration: wavy;
+    font-weight: 55;
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+}

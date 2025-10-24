@@ -1,24 +1,19 @@
-#block1{
+block1{
 background-color: aquamarine;
 }
 
-#block2{
+block2{
 background-color: sandybrown;
 }
 
 
 
-#h1 {
-font-style: italic;
+h1 {
 background-color: chocolate;
 color: white;
 }
 
-#h2 {
-    background-color: azure;
-    color: greenyellow;
-}
-
-#p {
-    color: black;
+h2 {
+    background-color: rgb(19, 196, 196);
+    color: green;
 }

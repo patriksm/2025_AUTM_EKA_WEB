@@ -8,20 +8,14 @@ myCarrot.src = "img/carrot.png";
 
 let box = 32;
 let food_coords = {
-    x: (Math.trunc(17*Math.random())+1)*box,
-    y: (Math.trunc(15*Math.random())+3)*box, 
+    x: (Math.trunc(17 * Math.random()) + 1) * box,
+    y: (Math.trunc(15 * Math.random()) + 3) * box,
     type: "carrot"
 }
-let snake = {
-    x: 6*box,
-    y: 2*box
-}
 
-function drawGame(){ // the function for drawing the game
+function drawGame() { // the function for drawing the game
     ctx.drawImage(myPlayground, 0, 0);
     ctx.drawImage(myCarrot, food_coords.x, food_coords.y);
-    ctx.fillStyle = "#FFE607";
-    ctx.fillRect(snake.x, snake.y, box, box);
 }
 
-let myGame = setInterval(drawGame, 100) // we create a refresh of the scene each 100 ms, each 100 ms the funciton drawGame will be used
+let myGame = setInterval(drawGame, 100) // we create a refresh of the scene each 100 ms, each 100 ms the function drawGame will be used

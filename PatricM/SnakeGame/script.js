@@ -24,16 +24,16 @@ snake[0] = {
 }
 
 document.addEventListener("keypress", (event) =>{
-    if(event.key == "w") {
+    if(event.key == "w" && dir != "down") {
         dir = "up";
     }
-    if(event.key == "s") {
+    if(event.key == "s" && dir != "up") {
         dir = "down";
     }
-    if(event.key == "a") {
+    if(event.key == "a" && dir != "right") {
         dir = "left";
     }
-    if(event.key == "d") {
+    if(event.key == "d" && dir != "left") {
         dir = "right";
     }
 })
@@ -66,6 +66,9 @@ function drawGame(){ // the function for drawing the game
         snake.pop();
     }
 
+    if(snakeX < 0 || snakeX > 18*box){
+        clearInterval(myGame);
+    }
    
 
     let newHead = {

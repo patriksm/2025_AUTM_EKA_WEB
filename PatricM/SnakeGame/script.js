@@ -39,8 +39,20 @@ snake[4] = {
   y: 12 * box,
 };
 
-// snake.unshift(newHead)
-// snake.pop()
+document.addEventListener("keypress", (event) => {
+  if (event.key == "w") {
+    dir = "up";
+  }
+  if (event.key == "s") {
+    dir = "down";
+  }
+  if (event.key == "a") {
+    dir = "left";
+  }
+  if (event.key == "d") {
+    dir = "right";
+  }
+});
 
 function drawGame() {
   // the function for drawing the game
@@ -53,7 +65,11 @@ function drawGame() {
 
   snakeX = snake[0].x;
   snakeY = snake[0].y;
-  snakeY -= box;
+
+  if (dir == "right") snakeX += box;
+  if (dir == "up") snakeY -= box;
+  if (dir == "left") snakeX -= box;
+  if (dir == "down") snakeY += box;
 
   snake.pop();
 

@@ -15,6 +15,7 @@ let food_coords = {
 
 let snakeX = 0;
 let snakeY = 0;
+let dir = "";
 
 let snake = [];
 snake[0] = {
@@ -39,10 +40,21 @@ snake[4] = {
     y: 12*box
 }
 
+document.addEventListener("keypress", (event) =>{
+    if(event.key == "w") {
+        dir = "up";
+    }
+    if(event.key == "s") {
+        dir = "down";
+    }
+    if(event.key == "a") {
+        dir = "left";
+    }
+    if(event.key == "d") {
+        dir = "right";
+    }
+})
 
-
-// snake.unshift(newHead)
-// snake.pop()
 
 function drawGame(){ // the function for drawing the game
     ctx.drawImage(myPlayground, 0, 0);
@@ -54,7 +66,11 @@ function drawGame(){ // the function for drawing the game
 
     snakeX = snake[0].x;
     snakeY = snake[0].y;
-    snakeY -= box;
+    
+    if(dir == "right") snakeX += box;
+    if(dir == "up") snakeY -= box;
+    if(dir == "left") snakeX -= box;
+    if(dir == "down") snakeY += box;
 
     snake.pop();
 

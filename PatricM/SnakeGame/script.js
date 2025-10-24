@@ -22,23 +22,6 @@ snake[0] = {
     x: 9*box,
     y: 10*box
 }
-snake[1] = {
-    x: 8*box,
-    y: 10*box
-}
-snake[2] = {
-    x: 8*box,
-    y: 11*box
-}
-snake[3] = {
-    x: 7*box,
-    y: 11*box
-}
-
-snake[4] = {
-    x: 7*box,
-    y: 12*box
-}
 
 document.addEventListener("keypress", (event) =>{
     if(event.key == "w") {
@@ -66,13 +49,24 @@ function drawGame(){ // the function for drawing the game
 
     snakeX = snake[0].x;
     snakeY = snake[0].y;
-    
+
     if(dir == "right") snakeX += box;
     if(dir == "up") snakeY -= box;
     if(dir == "left") snakeX -= box;
     if(dir == "down") snakeY += box;
 
-    snake.pop();
+    //if the food is eaten
+    if(snakeX == food_coords.x && snakeY == food_coords.y){
+        food_coords = {
+            x: (Math.trunc(17*Math.random())+1)*box,
+            y: (Math.trunc(15*Math.random())+3)*box, 
+            type: "carrot"
+        }
+    } else {
+        snake.pop();
+    }
+
+   
 
     let newHead = {
         x: snakeX,

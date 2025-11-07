@@ -1,0 +1,61 @@
+#container {
+    position: absolute;
+    width: 1200px;
+    height: 800px;
+    border: 2px solid #000;
+    perspective: 600px;
+}
+
+#world {
+    position: absolute;
+    width: inherit;
+    height: inherit;
+    transform-style: preserve-3d;
+    
+    transform: rotateX(180deg) rotateY(180deg);
+}
+
+
+#world div {
+    position: absolute;
+    width: 200px;
+    height: 200px;
+   /* border: 2px solid #ffffff;*/
+    opacity: 0.8; 
+}
+
+/* FRONT */
+#square {
+    background-color: blueviolet;
+    transform: translate3d(500px, 300px, 100px) ;
+}
+
+/* BACK */
+#square1 {
+    background-color: crimson;
+    transform: translate3d(500px, 300px, -100px) rotateY(180deg);
+}
+
+/* RIGHT */
+#square2 {
+    background-color: limegreen;
+    transform: translate3d(600px, 300px, 0px) rotateY(90deg);
+}
+
+/* LEFT */
+#square3 {
+    background-color: dodgerblue;
+    transform: translate3d(400px, 300px, 0px) rotateY(-90deg);
+}
+
+/* TOP */
+#square4 {
+    background-color: gold;
+    transform: translate3d(500px, 200px, 0px) rotateX(90deg);
+}
+
+/* BOTTOM */
+#square5 {
+    background-color: deeppink;
+    transform: translate3d(500px, 400px, 0px) rotateX(-90deg);
+}

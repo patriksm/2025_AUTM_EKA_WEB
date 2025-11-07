@@ -1,0 +1,57 @@
+#container{
+    position: absolute;
+    width: 1200px;
+    height: 800px;
+    border: 2px solid #000;
+    perspective: 600px;
+}
+
+#world{
+    position: absolute;
+    width: inherit;
+    height: inherit;
+    transform-style: preserve-3d;
+}
+
+#square{
+    width: 200px;
+    height: 200px;
+    background-color: blueviolet;
+    transform: translate3d(500px, 300px, 0px);
+}
+#square1{
+    width: 200px;
+    height: 200px;
+    background-color: blueviolet;
+    transform: translate3d(500px, 300px, 0px);
+}
+#square2{
+    width: 200px;
+    height: 200px;
+    background-color: blueviolet;
+    transform: translate3d(500px, 300px, 0px);
+}
+#square3{
+    width: 200px;
+    height: 200px;
+    background-color: blueviolet;
+    transform: translate3d(500px, 300px, 0px);
+}
+#square4{
+    width: 200px;
+    height: 200px;
+    background-color: blueviolet;
+    transform: translate3d(500px, 300px, 0px);
+}
+#square5{
+    width: 200px;
+    height: 200px;
+    background-color: blueviolet;
+    transform: translate3d(500px, 300px, 0px);
+}
+#square6{
+    width: 200px;
+    height: 200px;
+    background-color: blueviolet;
+    transform: translate3d(500px, 300px, 0px);
+}

@@ -4,6 +4,7 @@
   height: 800px;
   border: 2px solid #000;
   perspective: 600px;
+  overflow: hidden;
 }
 
 #world {
@@ -11,60 +12,5 @@
   width: inherit;
   height: inherit;
   transform-style: preserve-3d;
-}
-
-/* #square {
-  position: absolute;
-  width: 200px;
-  height: 200px;
-  background-color: blueviolet;
-  transform: translate3d(500px, 300px, 0px);
-} */
-#square1 {
-  position: absolute;
-  width: 200px;
-  height: 200px;
-  background-color: green;
-  transform: translate3d(500px, 300px, -100px) rotateY(0deg);
-  opacity: 0.5;
-}
-#square2 {
-  position: absolute;
-  width: 200px;
-  height: 200px;
-  background-color: blue;
-  transform: translate3d(600px, 300px, 0px) rotateY(90deg);
-  opacity: 0.5;
-}
-#square3 {
-  position: absolute;
-  width: 200px;
-  height: 200px;
-  background-color: yellow;
-  transform: translate3d(500px, 400px, 0px) rotateX(90deg);
-  opacity: 0.5;
-}
-#square4 {
-  position: absolute;
-  width: 200px;
-  height: 200px;
-  background-color: red;
-  transform: translate3d(500px, 200px, 0px) rotateX(90deg);
-  opacity: 0.5;
-}
-#square5 {
-  position: absolute;
-  width: 200px;
-  height: 200px;
-  background-color: gray;
-  transform: translate3d(400px, 300px, 0px) rotateY(90deg);
-  opacity: 0.5;
-}
-#square6 {
-  position: absolute;
-  width: 200px;
-  height: 200px;
-  background-color: skyblue;
-  transform: translate3d(400px, 300px, 0px) rotateY(90deg);
-  opacity: 0.5;
+  transform: rotateY(deg) rotateX(0deg) rotateZ(0deg);
 }

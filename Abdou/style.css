@@ -1,0 +1,29 @@
+#color{background-color: brown;}
+.blue{color: blue}
+.green{color: green;}
+.yellow{color: yellow;}#container {
+    position: absolute;
+    width: 1200px;
+    height: 800px;
+    border: 2px solid #000;
+    perspective: 600px;
+    overflow: hidden;
+}
+
+#world {
+    position: absolute;
+    width: inherit;
+    height: inherit;
+    transform-style: preserve-3d;
+    transform: rotateY(deg) rotateX(0deg) rotateZ(0deg);
+}
+
+#pawn {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: blueviolet;
+    top: 390px;
+    left: 590px;
+}

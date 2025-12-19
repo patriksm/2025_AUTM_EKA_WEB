@@ -9,36 +9,34 @@ var container = document.getElementById("container");
 const texFloor = "url('textures/floor.jpg')";
 const texWall  = "url('textures/wall.jpg')";
 const texBox   = "url('textures/sandy_wall.jpg')"; 
-// NEW: The Eka Texture
 const texEka   = "url('textures/eka.png')";
 
-// --- GAME UI (Win Message) ---
+// --- UI GENERATION (Pure JS) ---
+// 1. Win Message
 var winMsg = document.createElement("div");
-winMsg.style.position = "absolute";
-winMsg.style.top = "40%";
-winMsg.style.left = "50%";
-winMsg.style.transform = "translate(-50%, -50%)";
-winMsg.style.color = "#FFD700"; // Gold Color
-winMsg.style.fontSize = "60px";
-winMsg.style.fontFamily = "Arial Black";
-winMsg.style.textShadow = "0px 0px 20px black";
-winMsg.style.display = "none"; 
+Object.assign(winMsg.style, {
+    position: "absolute", top: "40%", left: "50%", transform: "translate(-50%, -50%)",
+    color: "#FFD700", fontSize: "60px", fontFamily: "Arial Black", textShadow: "0px 0px 20px black",
+    display: "none", zIndex: "2000"
+});
 winMsg.innerText = "YOU FOUND EKA!";
-winMsg.style.zIndex = "2000";
 document.body.appendChild(winMsg);
+// 2. Death Message (New)
+var deathMsg = document.createElement("div");
+Object.assign(deathMsg.style, {
+    position: "absolute", top: "40%", left: "50%", transform: "translate(-50%, -50%)",
+    color: "red", fontSize: "60px", fontFamily: "Arial Black", textShadow: "0px 0px 20px black",
+    display: "none", zIndex: "2000"
+});
+deathMsg.innerText = "WASTED";
+document.body.appendChild(deathMsg);
 
-// Debug display
+// 3. Debug
 var debug = document.createElement("div");
-debug.style.position = "absolute";
-debug.style.color = "white";
-debug.style.top = "10px";
-debug.style.left = "10px";
-debug.style.fontFamily = "monospace";
-debug.style.backgroundColor = "rgba(0,0,0,0.5)";
-debug.style.padding = "10px";
-debug.style.zIndex = "1000";
-debug.style.fontSize = "12px";
-debug.style.borderRadius = "5px";
+Object.assign(debug.style, {
+    position: "absolute", color: "white", top: "10px", left: "10px", fontFamily: "monospace",
+    backgroundColor: "rgba(0,0,0,0.5)", padding: "10px", zIndex: "1000", fontSize: "12px", borderRadius: "5px"
+});
 document.body.appendChild(debug);
 
 // Pointer Lock
@@ -54,7 +52,6 @@ function player(x, y, z, rx, ry, vx, vy, vz) {
     this.onGround = false;
 }
 
-// Spawn Player
 var pawn = new player(0, -200, 800, 0, 0, 10, 15, 10);
 
 // ==========================================
@@ -69,51 +66,42 @@ let myRoom = [
     [0, 100, 0, 90, 0, 0, 3000, 3000, "#333", 1, texFloor],
 
     // --- WALLS ---
-    [0, -400, -1500, 0, 0, 0, 3000, 1000, "grey", 1, texWall], // Front
-    [0, -400, 1500, 0, 180, 0, 3000, 1000, "grey", 1, texWall], // Back
-    [-1500, -400, 0, 0, 90, 0, 3000, 1000, "grey", 1, texWall], // Left
-    [1500, -400, 0, 0, -90, 0, 3000, 1000, "grey", 1, texWall], // Right
+    [0, -400, -1500, 0, 0, 0, 3000, 1000, "grey", 1, texWall],
+    [0, -400, 1500, 0, 180, 0, 3000, 1000, "grey", 1, texWall],
+    [-1500, -400, 0, 0, 90, 0, 3000, 1000, "grey", 1, texWall],
+    [1500, -400, 0, 0, -90, 0, 3000, 1000, "grey", 1, texWall],
 
     // --- PARKOUR STEPS ---
-    
-    // Step 1
     [0, 50, 400, 0, 0, 0, 150, 150, "orange", 1, texBox],
     [0, -25, 400, 90, 0, 0, 150, 150, "orange", 1, texBox],
-
-    // Step 2
     [0, -50, 100, 0, 0, 0, 150, 150, "orange", 1, texBox],
     [0, -125, 100, 90, 0, 0, 150, 150, "orange", 1, texBox],
-
-    // Step 3
     [0, -150, -200, 0, 0, 0, 150, 150, "orange", 1, texBox],
     [0, -225, -200, 90, 0, 0, 150, 150, "orange", 1, texBox],
-
-    // Step 4 (Bridge)
     [0, -250, -600, 0, 0, 0, 150, 150, "orange", 1, texBox],
     [0, -325, -600, 90, 0, 0, 150, 400, "orange", 1, texBox],
 
-    // Step 5 (Side Jump)
-    [300, -400, -900, 0, 0, 0, 150, 150, "orange", 1, texBox],
-    [300, -475, -900, 90, 0, 0, 150, 150, "orange", 1, texBox],
+    
+    // A platform that will move left and right
+    [0, -450, -1000, 90, 0, 0, 200, 200, "cyan", 1, texBox],
 
-    // Step 6 (Center)
-    [0, -550, -1100, 0, 0, 0, 150, 150, "orange", 1, texBox],
-    [0, -625, -1100, 90, 0, 0, 150, 150, "orange", 1, texBox],
+    
+    // If you fall here, you restart
+    [0, 90, -1000, 90, 0, 0, 1000, 800, "red", 0.8, null],
 
-    // --- THE GOAL (EKA BOX) ---
-    // I added texEka to the last slot of each line below
-    [goalX, goalY, goalZ-100, 0, 0, 0, 200, 200, "gold", 1, texEka], // Front
-    [goalX, goalY-100, goalZ, 90, 0, 0, 200, 200, "gold", 1, texEka], // Top
-    [goalX, goalY, goalZ+100, 0, 180, 0, 200, 200, "gold", 1, texEka], // Back
-    [goalX-100, goalY, goalZ, 0, 90, 0, 200, 200, "gold", 1, texEka], // Left
-    [goalX+100, goalY, goalZ, 0, -90, 0, 200, 200, "gold", 1, texEka], // Right
-    [goalX, goalY+100, goalZ, -90, 0, 0, 200, 200, "gold", 1, texEka], // Bottom
+    // --- THE GOAL ---
+    [goalX, goalY, goalZ-100, 0, 0, 0, 200, 200, "gold", 1, texEka],
+    [goalX, goalY-100, goalZ, 90, 0, 0, 200, 200, "gold", 1, texEka],
+    [goalX, goalY, goalZ+100, 0, 180, 0, 200, 200, "gold", 1, texEka],
+    [goalX-100, goalY, goalZ, 0, 90, 0, 200, 200, "gold", 1, texEka],
+    [goalX+100, goalY, goalZ, 0, -90, 0, 200, 200, "gold", 1, texEka],
+    [goalX, goalY+100, goalZ, -90, 0, 0, 200, 200, "gold", 1, texEka],
 ];
 
 drawMyWorld(myRoom, "level");
 
 // ==========================================
-// 3. LOGIC
+// 3. INPUTS & LOGIC
 // ==========================================
 var pressForward = pressBack = pressRight = pressLeft = pressUp = 0;
 var mouseX = mouseY = 0;
@@ -122,25 +110,43 @@ var dx = dy = dz = 0;
 var gravity = 0.4; 
 var onGround = false;
 var won = false;
+var isSprinting = false; // New Sprint Variable
 
 document.addEventListener("keydown", (e) => {
-    if (e.key == "w") pressForward = pawn.vz;
+    // Check Sprint
+    if (e.key === "Shift") isSprinting = true;
+
+    if (e.key == "b") pressForward = pawn.vz;
     if (e.key == "s") pressBack = pawn.vz;
     if (e.key == "d") pressRight = pawn.vx;
     if (e.key == "a") pressLeft = pawn.vx;
     if (e.key == " ") pressUp = pawn.vy;
 });
+
 document.addEventListener("keyup", (e) => {
+    // Check Sprint
+    if (e.key === "Shift") isSprinting = false;
+
     if (e.key == "w") pressForward = 0;
     if (e.key == "s") pressBack = 0;
     if (e.key == "d") pressRight = 0;
     if (e.key == "a") pressLeft = 0;
     if (e.key == " ") pressUp = 0;
 });
+
 document.addEventListener("mousemove", (e) => {
     mouseX = e.movementX;
     mouseY = e.movementY;
 });
+
+// Helper to kill player
+function respawn() {
+    deathMsg.style.display = "block";
+    pawn.x = 0; pawn.y = -200; pawn.z = 800; // Reset Pos
+    pawn.vx = pawn.vy = pawn.vz = 0;
+    dx = dy = dz = 0;
+    setTimeout(() => { deathMsg.style.display = "none"; }, 1500);
+}
 
 function checkWinCondition() {
     if (won) return;
@@ -158,8 +164,27 @@ function checkWinCondition() {
 }
 
 function update() {
-    dz = +(pressRight - pressLeft) * Math.sin(pawn.ry * DEG) - (pressForward - pressBack) * Math.cos(pawn.ry * DEG);
-    dx = +(pressRight - pressLeft) * Math.cos(pawn.ry * DEG) + (pressForward - pressBack) * Math.sin(pawn.ry * DEG);
+    // 1. ANIMATE MOVING PLATFORM (Cyan)
+    let moverIndex = myRoom.findIndex(obj => obj[8] === "cyan");
+    if(moverIndex !== -1) {
+        // Move Left/Right using Sine Wave
+        let moveSpeed = 0.002;
+        let range = 400; 
+        myRoom[moverIndex][0] = Math.sin(Date.now() * moveSpeed) * range;
+        
+        // Update Element
+        let el = document.getElementById("level" + moverIndex);
+        if(el) {
+            let sq = myRoom[moverIndex];
+            el.style.transform = `translate3d(${600 + sq[0] - sq[6] / 2}px, ${400 + sq[1] - sq[7] / 2}px, ${sq[2]}px) rotateX(${sq[3]}deg) rotateY(${sq[4]}deg) rotateZ(${sq[5]}deg)`;
+        }
+    }
+
+    // 2. MOVEMENT (With Sprint)
+    let speedMult = isSprinting ? 2.0 : 1.0;
+
+    dz = +(pressRight - pressLeft) * speedMult * Math.sin(pawn.ry * DEG) - (pressForward - pressBack) * speedMult * Math.cos(pawn.ry * DEG);
+    dx = +(pressRight - pressLeft) * speedMult * Math.cos(pawn.ry * DEG) + (pressForward - pressBack) * speedMult * Math.sin(pawn.ry * DEG);
     dy += gravity;
 
     if (onGround) {
@@ -185,13 +210,16 @@ function update() {
     pawn.x += dx;
     pawn.y += dy;
 
+    // 3. FALL CHECK (Void)
+    if(pawn.y > 600) respawn();
+
     checkWinCondition();
 
     world.style.transform = `translateZ(600px) rotateX(${-pawn.rx}deg) rotateY(${pawn.ry}deg) translate3d(${-pawn.x}px, ${-pawn.y}px, ${-pawn.z}px)`;
 
     debug.innerHTML = `
-        FIND EKA!<br>
-        Jump to the Image Box!<br>
+        HOLD SHIFT TO SPRINT<br>
+        AVOID RED LAVA<br>
         Height: ${Math.abs(pawn.y).toFixed(0)}
     `;
 }
@@ -210,7 +238,6 @@ function drawMyWorld(squares, name) {
         el.style.width = `${squares[i][6]}px`;
         el.style.height = `${squares[i][7]}px`;
         
-        // Color & Texture Logic
         el.style.backgroundColor = squares[i][8];
         if (squares[i][10]) {
             el.style.backgroundImage = squares[i][10];
@@ -228,7 +255,7 @@ function drawMyWorld(squares, name) {
 }
 
 // ==========================================
-// 5. COLLISION
+// 5. COLLISION (With Lava & Platform Logic)
 // ==========================================
 function collision(mapObj, leadObj) {
     onGround = false;
@@ -245,6 +272,14 @@ function collision(mapObj, leadObj) {
             let normal = coorReTransform(0, 0, 1, obj[3], obj[4], obj[5]);
 
             if (Math.abs(point1[0]) < (obj[6] + 70) / 2 && Math.abs(point1[1]) < (obj[7] + 70) / 2 && Math.abs(point1[2]) < 50) {
+                
+                // --- SPECIAL BLOCK LOGIC ---
+                // 1. Red = LAVA = DEATH
+                if(obj[8] === "red") {
+                    respawn();
+                    return;
+                }
+
                 point1[2] = Math.sign(point0[2]) * 50;
                 let point2 = coorReTransform(point1[0], point1[1], point1[2], obj[3], obj[4], obj[5]);
                 let point3 = coorReTransform(point1[0], point1[1], 0, obj[3], obj[4], obj[5]);
@@ -257,6 +292,15 @@ function collision(mapObj, leadObj) {
                     if (point3[1] > point2[1]) {
                         onGround = true;
                         if (dy > 0) dy = 0;
+
+                        // 2. Cyan = MOVING PLATFORM = FRICTION
+                        if(obj[8] === "cyan") {
+                             let moveSpeed = 0.002;
+                             let range = 400;
+                             let curr = Math.sin(Date.now()*moveSpeed)*range;
+                             let next = Math.sin((Date.now()+20)*moveSpeed)*range;
+                             dx += (next - curr); // Push player
+                        }
                     }
                 } else { dy = y1 - y0; }
             }

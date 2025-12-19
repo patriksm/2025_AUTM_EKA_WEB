@@ -11,6 +11,12 @@ const texWall  = "url('textures/wall.jpg')";
 const texBox   = "url('textures/sandy_wall.jpg')"; 
 const texEka   = "url('textures/eka.png')";
 
+// --- BULLET SYSTEM (Using the method from your second code) ---
+var myBullets = [];           // Stores bullet DOM elements
+var myBulletsData = [];       // Stores bullet player objects
+var myBulletNumber = 0;       // Counter for bullet IDs
+var bulletSpeed = 20;         // Speed of bullets
+
 // --- UI GENERATION (Pure JS) ---
 // 1. Win Message
 var winMsg = document.createElement("div");
@@ -21,7 +27,8 @@ Object.assign(winMsg.style, {
 });
 winMsg.innerText = "YOU FOUND EKA!";
 document.body.appendChild(winMsg);
-// 2. Death Message (New)
+
+// 2. Death Message
 var deathMsg = document.createElement("div");
 Object.assign(deathMsg.style, {
     position: "absolute", top: "40%", left: "50%", transform: "translate(-50%, -50%)",
@@ -57,8 +64,6 @@ var pawn = new player(0, -200, 800, 0, 0, 10, 15, 10);
 // ==========================================
 // 2. LEVEL DESIGN
 // ==========================================
-// Format: [x, y, z, rx, ry, rz, width, height, color, opacity, texture]
-
 let goalX = 0, goalY = -700, goalZ = -1400;
 
 let myRoom = [
@@ -81,11 +86,9 @@ let myRoom = [
     [0, -250, -600, 0, 0, 0, 150, 150, "orange", 1, texBox],
     [0, -325, -600, 90, 0, 0, 150, 400, "orange", 1, texBox],
 
-    
     // A platform that will move left and right
     [0, -450, -1000, 90, 0, 0, 200, 200, "cyan", 1, texBox],
 
-    
     // If you fall here, you restart
     [0, 90, -1000, 90, 0, 0, 1000, 800, "red", 0.8, null],
 
@@ -101,7 +104,59 @@ let myRoom = [
 drawMyWorld(myRoom, "level");
 
 // ==========================================
-// 3. INPUTS & LOGIC
+// 3. BULLET FUNCTIONS (EXACTLY from your second code)
+// ==========================================
+
+function drawMyBullet(num) {
+    let myBullet = document.createElement("div");
+    myBullet.id = `bullet_${num}`;
+    myBullet.style.display = "block";
+    myBullet.style.position = "absolute";
+    myBullet.style.width = `50px`;
+    myBullet.style.height = `50px`;
+    myBullet.style.borderRadius = `50%`;
+    myBullet.style.backgroundColor = `red`;
+    myBullet.style.boxShadow = "0 0 20px rgba(255,0,0,0.8)";
+    myBullet.style.zIndex = "100";
+    myBullet.style.transform = `translate3d(${600 + pawn.x - 25}px, ${400 + pawn.y - 25}px, ${pawn.z}px) rotateX(${pawn.rx}deg) rotateY(${-pawn.ry}deg)`;
+    world.appendChild(myBullet);
+    return myBullet;
+}
+
+function updateBullets() {
+    for (let i = 0; i < myBullets.length; i++) {
+        // Calculate bullet movement 
+        let dzb = +(myBulletsData[i].vx) * Math.sin((myBulletsData[i].ry - 45) * DEG) - (myBulletsData[i].vz) * Math.cos((myBulletsData[i].ry - 45) * DEG);
+        let dxb = +(myBulletsData[i].vx) * Math.cos((myBulletsData[i].ry - 45) * DEG) + (myBulletsData[i].vz) * Math.sin((myBulletsData[i].ry - 45) * DEG);
+        
+        // Update bullet position
+        myBulletsData[i].x += dxb;
+        myBulletsData[i].z += dzb;
+        
+        // Add some gravity to bullets
+        myBulletsData[i].y += 0.5;
+        
+        // Update bullet rotation for visual spin (optional)
+        // myBulletsData[i].ry += 10; // Uncomment for spinning effect
+        
+        // Update bullet visual position
+        myBullets[i].style.transform = `translate3d(${600 + myBulletsData[i].x - 25}px, ${400 + myBulletsData[i].y - 25}px, ${myBulletsData[i].z}px) rotateX(${myBulletsData[i].rx}deg) rotateY(${-myBulletsData[i].ry}deg)`;
+        
+        // Remove bullets that are too far away
+        if (Math.abs(myBulletsData[i].x) > 3000 || Math.abs(myBulletsData[i].y) > 3000 || Math.abs(myBulletsData[i].z) > 3000) {
+            myBullets[i].style.display = "none";
+            if (myBullets[i].parentNode) {
+                myBullets[i].parentNode.removeChild(myBullets[i]);
+            }
+            myBullets.splice(i, 1);
+            myBulletsData.splice(i, 1);
+            i--;
+        }
+    }
+}
+
+// ==========================================
+// 4. INPUTS & LOGIC
 // ==========================================
 var pressForward = pressBack = pressRight = pressLeft = pressUp = 0;
 var mouseX = mouseY = 0;
@@ -110,13 +165,11 @@ var dx = dy = dz = 0;
 var gravity = 0.4; 
 var onGround = false;
 var won = false;
-var isSprinting = false; // New Sprint Variable
+var isSprinting = false;
 
 document.addEventListener("keydown", (e) => {
-    // Check Sprint
     if (e.key === "Shift") isSprinting = true;
-
-    if (e.key == "b") pressForward = pawn.vz;
+    if (e.key == "w") pressForward = pawn.vz;
     if (e.key == "s") pressBack = pawn.vz;
     if (e.key == "d") pressRight = pawn.vx;
     if (e.key == "a") pressLeft = pawn.vx;
@@ -124,9 +177,7 @@ document.addEventListener("keydown", (e) => {
 });
 
 document.addEventListener("keyup", (e) => {
-    // Check Sprint
     if (e.key === "Shift") isSprinting = false;
-
     if (e.key == "w") pressForward = 0;
     if (e.key == "s") pressBack = 0;
     if (e.key == "d") pressRight = 0;
@@ -139,12 +190,33 @@ document.addEventListener("mousemove", (e) => {
     mouseY = e.movementY;
 });
 
+// Shooting with mouse click (EXACTLY from your second code)
+document.addEventListener("click", function () {
+    if (lock && !won) {
+        myBullets.push(drawMyBullet(myBulletNumber));
+        // Store bullet data with player's rotation and bullet speed
+        myBulletsData.push(new player(pawn.x, pawn.y, pawn.z, pawn.rx, pawn.ry, bulletSpeed, 0, bulletSpeed));
+        myBulletNumber++;
+    }
+});
+
 // Helper to kill player
 function respawn() {
     deathMsg.style.display = "block";
-    pawn.x = 0; pawn.y = -200; pawn.z = 800; // Reset Pos
+    pawn.x = 0; pawn.y = -200; pawn.z = 800;
     pawn.vx = pawn.vy = pawn.vz = 0;
     dx = dy = dz = 0;
+    
+    // Clear bullets on respawn
+    for (let i = 0; i < myBullets.length; i++) {
+        if (myBullets[i].parentNode) {
+            myBullets[i].parentNode.removeChild(myBullets[i]);
+        }
+    }
+    myBullets = [];
+    myBulletsData = [];
+    myBulletNumber = 0;
+    
     setTimeout(() => { deathMsg.style.display = "none"; }, 1500);
 }
 
@@ -159,20 +231,31 @@ function checkWinCondition() {
             pawn.vx = pawn.vy = pawn.vz = 0;
             won = false;
             winMsg.style.display = "none";
+            
+            // Clear bullets on win
+            for (let i = 0; i < myBullets.length; i++) {
+                if (myBullets[i].parentNode) {
+                    myBullets[i].parentNode.removeChild(myBullets[i]);
+                }
+            }
+            myBullets = [];
+            myBulletsData = [];
+            myBulletNumber = 0;
         }, 3000);
     }
 }
 
 function update() {
+    // Update bullets
+    updateBullets();
+
     // 1. ANIMATE MOVING PLATFORM (Cyan)
     let moverIndex = myRoom.findIndex(obj => obj[8] === "cyan");
     if(moverIndex !== -1) {
-        // Move Left/Right using Sine Wave
         let moveSpeed = 0.002;
         let range = 400; 
         myRoom[moverIndex][0] = Math.sin(Date.now() * moveSpeed) * range;
         
-        // Update Element
         let el = document.getElementById("level" + moverIndex);
         if(el) {
             let sq = myRoom[moverIndex];
@@ -220,14 +303,16 @@ function update() {
     debug.innerHTML = `
         HOLD SHIFT TO SPRINT<br>
         AVOID RED LAVA<br>
-        Height: ${Math.abs(pawn.y).toFixed(0)}
+        CLICK TO SHOOT BULLETS<br>
+        Height: ${Math.abs(pawn.y).toFixed(0)}<br>
+        Bullets: ${myBullets.length}
     `;
 }
 
 setInterval(update, 20);
 
 // ==========================================
-// 4. RENDERING
+// 5. RENDERING
 // ==========================================
 function drawMyWorld(squares, name) {
     let frag = document.createDocumentFragment();
@@ -255,7 +340,7 @@ function drawMyWorld(squares, name) {
 }
 
 // ==========================================
-// 5. COLLISION (With Lava & Platform Logic)
+// 6. COLLISION (With Lava & Platform Logic)
 // ==========================================
 function collision(mapObj, leadObj) {
     onGround = false;

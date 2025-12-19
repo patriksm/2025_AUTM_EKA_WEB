@@ -4,6 +4,7 @@
     height: 800px;
     border: 2px solid #000;
     perspective: 600px;
+    overflow: hidden;
 }
 
 #world {

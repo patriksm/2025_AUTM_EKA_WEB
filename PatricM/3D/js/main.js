@@ -129,9 +129,11 @@ function update() {
     document.onclick = function () {
         if (lock) {
             myBullets.push(drawMyBullet(myBulletNumber));
+            myBulletsData.push(new player(pawn.x, pawn.y, pawn.z, pawn.rx, pawn.ry,0,0,0));
+            console.log(myBullets);
+            console.log(myBulletsData);
             myBulletNumber++;
         }
-
     }
 
     world.style.transform = `translateZ(600px) rotateX(${-pawn.rx}deg) rotateY(${pawn.ry}deg) translate3d(${-pawn.x}px, ${-pawn.y}px, ${-pawn.z}px)`;

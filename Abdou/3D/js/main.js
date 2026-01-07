@@ -10,14 +10,21 @@ const texFloor = "url('textures/floor.jpg')";
 const texWall  = "url('textures/wall.jpg')";
 const texBox   = "url('textures/sandy_wall.jpg')"; 
 const texEka   = "url('textures/eka.png')";
+const texGun   = "url('textures/gun.png')"; // Gun texture
 
-// --- BULLET SYSTEM (Using the method from your second code) ---
-var myBullets = [];           // Stores bullet DOM elements
-var myBulletsData = [];       // Stores bullet player objects
-var myBulletNumber = 0;       // Counter for bullet IDs
-var bulletSpeed = 20;         // Speed of bullets
+// --- BULLET SYSTEM ---
+var myBullets = [];           
+var myBulletsData = [];       
+var myBulletNumber = 0;       
+var bulletSpeed = 20;         
 
-// --- UI GENERATION (Pure JS) ---
+// --- GUN SYSTEM ---
+var hasGun = false;
+var gunElement = null;
+var gunCollected = false;
+var gunSpawned = false;
+
+// --- UI GENERATION ---
 // 1. Win Message
 var winMsg = document.createElement("div");
 Object.assign(winMsg.style, {
@@ -38,7 +45,17 @@ Object.assign(deathMsg.style, {
 deathMsg.innerText = "WASTED";
 document.body.appendChild(deathMsg);
 
-// 3. Debug
+// 3. Gun Pickup Message
+var gunMsg = document.createElement("div");
+Object.assign(gunMsg.style, {
+    position: "absolute", top: "20%", left: "50%", transform: "translate(-50%, -50%)",
+    color: "#00FF00", fontSize: "40px", fontFamily: "Arial Black", textShadow: "0px 0px 20px black",
+    display: "none", zIndex: "2000"
+});
+gunMsg.innerText = "GUN COLLECTED! YOU CAN NOW SHOOT!";
+document.body.appendChild(gunMsg);
+
+// 4. Debug
 var debug = document.createElement("div");
 Object.assign(debug.style, {
     position: "absolute", color: "white", top: "10px", left: "10px", fontFamily: "monospace",
@@ -62,9 +79,14 @@ function player(x, y, z, rx, ry, vx, vy, vz) {
 var pawn = new player(0, -200, 800, 0, 0, 10, 15, 10);
 
 // ==========================================
-// 2. LEVEL DESIGN
+// 2. LEVEL DESIGN (with gun spawn)
 // ==========================================
 let goalX = 0, goalY = -700, goalZ = -1400;
+
+// Add gun spawn position (in front of player at start)
+let gunSpawnX = 200;
+let gunSpawnY = 30;  
+let gunSpawnZ = 300;  
 
 let myRoom = [
     // --- FLOOR ---
@@ -104,7 +126,81 @@ let myRoom = [
 drawMyWorld(myRoom, "level");
 
 // ==========================================
-// 3. BULLET FUNCTIONS (EXACTLY from your second code)
+// 3. GUN FUNCTIONS (with PNG image)
+// ==========================================
+
+function createGun() {
+    // Create gun element with image
+    gunElement = document.createElement("div");
+    gunElement.id = "gun";
+    gunElement.style.position = "absolute";
+    gunElement.style.width = `150px`;
+    gunElement.style.height = `80px`;
+    
+    // Use gun PNG image
+    gunElement.style.backgroundImage = texGun;
+    gunElement.style.backgroundSize = "contain";
+    gunElement.style.backgroundRepeat = "no-repeat";
+    gunElement.style.backgroundPosition = "center";
+    
+    gunElement.style.zIndex = "99";
+    gunElement.style.transform = `translate3d(${600 + gunSpawnX - 75}px, ${400 + gunSpawnY - 40}px, ${gunSpawnZ}px)`;
+    world.appendChild(gunElement);
+    gunSpawned = true;
+}
+
+function checkGunPickup() {
+    if (gunCollected || !gunSpawned || !gunElement) return;
+    
+    // Check distance to gun
+    let dx = pawn.x - gunSpawnX;
+    let dy = pawn.y - gunSpawnY;
+    let dz = pawn.z - gunSpawnZ;
+    let distance = Math.sqrt(dx*dx + dy*dy + dz*dz);
+    
+    if (distance < 100) {
+        // Collect gun
+        gunCollected = true;
+        hasGun = true;
+        
+        // Remove gun from world
+        if (gunElement.parentNode) {
+            gunElement.parentNode.removeChild(gunElement);
+        }
+        
+        // Show gun collected message
+        gunMsg.style.display = "block";
+        setTimeout(() => {
+            gunMsg.style.display = "none";
+        }, 3000);
+    }
+}
+
+function drawPlayerGun() {
+    if (!hasGun) return;
+    
+    // Create or update gun in player's view (HUD)
+    let playerGun = document.getElementById("playerGun");
+    if (!playerGun) {
+        playerGun = document.createElement("div");
+        playerGun.id = "playerGun";
+        playerGun.style.position = "absolute";
+        playerGun.style.width = `200px`;
+        playerGun.style.height = `100px`;
+        playerGun.style.backgroundImage = texGun;
+        playerGun.style.backgroundSize = "contain";
+        playerGun.style.backgroundRepeat = "no-repeat";
+        playerGun.style.backgroundPosition = "center";
+        playerGun.style.zIndex = "9999";
+        playerGun.style.bottom = "50px";
+        playerGun.style.right = "50px";
+        playerGun.style.filter = "drop-shadow(2px 2px 5px rgba(0,0,0,0.7))";
+        document.body.appendChild(playerGun);
+    }
+}
+
+// ==========================================
+// 4. BULLET FUNCTIONS (with EKA explosion)
 // ==========================================
 
 function drawMyBullet(num) {
@@ -118,9 +214,120 @@ function drawMyBullet(num) {
     myBullet.style.backgroundColor = `red`;
     myBullet.style.boxShadow = "0 0 20px rgba(255,0,0,0.8)";
     myBullet.style.zIndex = "100";
-    myBullet.style.transform = `translate3d(${600 + pawn.x - 25}px, ${400 + pawn.y - 25}px, ${pawn.z}px) rotateX(${pawn.rx}deg) rotateY(${-pawn.ry}deg)`;
+    
+    // Start bullet from gun position
+    let startX = pawn.x;
+    let startY = pawn.y - 20; // At player height
+    let startZ = pawn.z;
+    
+    myBullet.style.transform = `translate3d(${600 + startX - 25}px, ${400 + startY - 25}px, ${startZ}px) rotateX(${pawn.rx}deg) rotateY(${-pawn.ry}deg)`;
     world.appendChild(myBullet);
     return myBullet;
+}
+
+function checkEkaExplosion() {
+    if (won) return;
+    
+    for (let i = myBullets.length - 1; i >= 0; i--) {
+        let bullet = myBulletsData[i];
+        if (!bullet) continue;
+        
+        // Check distance to EKA box center
+        let dx = bullet.x - goalX;
+        let dy = bullet.y - (goalY - 50);
+        let dz = bullet.z - goalZ;
+        let distance = Math.sqrt(dx*dx + dy*dy + dz*dz);
+        
+        if (distance < 150) {
+            // EKA HIT! Create explosion
+            explodeEka();
+            
+            // Remove the bullet that hit
+            if (myBullets[i].parentNode) {
+                myBullets[i].parentNode.removeChild(myBullets[i]);
+            }
+            myBullets.splice(i, 1);
+            myBulletsData.splice(i, 1);
+            
+            // Win the game
+            won = true;
+            winMsg.innerText = "BOOOM!";
+            winMsg.style.color = "#FF4500";
+            winMsg.style.display = "block";
+            
+            setTimeout(() => {
+                pawn.x = 0; pawn.y = -200; pawn.z = 800;
+                pawn.vx = pawn.vy = pawn.vz = 0;
+                won = false;
+                winMsg.style.display = "none";
+                winMsg.innerText = "YOU FOUND EKA!";
+                winMsg.style.color = "#FFD700";
+                
+                // Clear bullets
+                for (let j = 0; j < myBullets.length; j++) {
+                    if (myBullets[j].parentNode) {
+                        myBullets[j].parentNode.removeChild(myBullets[j]);
+                    }
+                }
+                myBullets = [];
+                myBulletsData = [];
+                myBulletNumber = 0;
+            }, 3000);
+            
+            break;
+        }
+    }
+}
+
+function explodeEka() {
+    // Remove all EKA box sides
+    for (let i = 0; i < 6; i++) {
+        let ekaIndex = myRoom.length - 6 + i;
+        let el = document.getElementById(`level${ekaIndex}`);
+        if (el) {
+            // Create explosion effect
+            el.style.transition = "all 0.5s";
+            el.style.transform += " scale(1.5) rotate(180deg)";
+            el.style.opacity = "0";
+            
+            setTimeout(() => {
+                if (el.parentNode) {
+                    el.parentNode.removeChild(el);
+                }
+            }, 500);
+        }
+    }
+    
+    // Create explosion particles
+    for (let i = 0; i < 20; i++) {
+        setTimeout(() => {
+            let particle = document.createElement("div");
+            particle.style.position = "absolute";
+            particle.style.width = "30px";
+            particle.style.height = "30px";
+            particle.style.borderRadius = "50%";
+            particle.style.background = `radial-gradient(circle, ${i % 3 === 0 ? '#FFD700' : i % 3 === 1 ? '#FF4500' : '#FF0000'}, #000)`;
+            particle.style.boxShadow = "0 0 20px orange";
+            particle.style.zIndex = "101";
+            
+            // Random direction
+            let angle = Math.random() * Math.PI * 2;
+            let speed = 5 + Math.random() * 10;
+            let px = goalX + Math.cos(angle) * 100;
+            let py = goalY + Math.sin(angle) * 100;
+            let pz = goalZ + (Math.random() - 0.5) * 100;
+            
+            particle.style.transform = `translate3d(${600 + px - 15}px, ${400 + py - 15}px, ${pz}px)`;
+            world.appendChild(particle);
+            
+            // Animate particle
+            setTimeout(() => {
+                if (particle.parentNode) {
+                    particle.parentNode.removeChild(particle);
+                }
+            }, 1000);
+        }, i * 50);
+    }
 }
 
 function updateBullets() {
@@ -136,9 +343,6 @@ function updateBullets() {
         // Add some gravity to bullets
         myBulletsData[i].y += 0.5;
         
-        // Update bullet rotation for visual spin (optional)
-        // myBulletsData[i].ry += 10; // Uncomment for spinning effect
-        
         // Update bullet visual position
         myBullets[i].style.transform = `translate3d(${600 + myBulletsData[i].x - 25}px, ${400 + myBulletsData[i].y - 25}px, ${myBulletsData[i].z}px) rotateX(${myBulletsData[i].rx}deg) rotateY(${-myBulletsData[i].ry}deg)`;
         
@@ -153,10 +357,13 @@ function updateBullets() {
             i--;
         }
     }
+    
+    // Check for EKA explosion
+    checkEkaExplosion();
 }
 
 // ==========================================
-// 4. INPUTS & LOGIC
+// 5. INPUTS & LOGIC
 // ==========================================
 var pressForward = pressBack = pressRight = pressLeft = pressUp = 0;
 var mouseX = mouseY = 0;
@@ -190,11 +397,10 @@ document.addEventListener("mousemove", (e) => {
     mouseY = e.movementY;
 });
 
-// Shooting with mouse click (EXACTLY from your second code)
+// Shooting with mouse click - ONLY if has gun
 document.addEventListener("click", function () {
-    if (lock && !won) {
+    if (lock && !won && hasGun) {
         myBullets.push(drawMyBullet(myBulletNumber));
-        // Store bullet data with player's rotation and bullet speed
         myBulletsData.push(new player(pawn.x, pawn.y, pawn.z, pawn.rx, pawn.ry, bulletSpeed, 0, bulletSpeed));
         myBulletNumber++;
     }
@@ -220,34 +426,15 @@ function respawn() {
     setTimeout(() => { deathMsg.style.display = "none"; }, 1500);
 }
 
-function checkWinCondition() {
-    if (won) return;
-    let d = Math.sqrt((pawn.x - goalX)**2 + (pawn.y - (goalY-150))**2 + (pawn.z - goalZ)**2);
-    if (d < 200) {
-        won = true;
-        winMsg.style.display = "block";
-        setTimeout(() => {
-            pawn.x = 0; pawn.y = -200; pawn.z = 800;
-            pawn.vx = pawn.vy = pawn.vz = 0;
-            won = false;
-            winMsg.style.display = "none";
-            
-            // Clear bullets on win
-            for (let i = 0; i < myBullets.length; i++) {
-                if (myBullets[i].parentNode) {
-                    myBullets[i].parentNode.removeChild(myBullets[i]);
-                }
-            }
-            myBullets = [];
-            myBulletsData = [];
-            myBulletNumber = 0;
-        }, 3000);
-    }
-}
-
 function update() {
     // Update bullets
     updateBullets();
+    
+    // Draw player gun if collected
+    drawPlayerGun();
+    
+    // Check gun pickup
+    checkGunPickup();
 
     // 1. ANIMATE MOVING PLATFORM (Cyan)
     let moverIndex = myRoom.findIndex(obj => obj[8] === "cyan");
@@ -296,23 +483,22 @@ function update() {
     // 3. FALL CHECK (Void)
     if(pawn.y > 600) respawn();
 
-    checkWinCondition();
-
     world.style.transform = `translateZ(600px) rotateX(${-pawn.rx}deg) rotateY(${pawn.ry}deg) translate3d(${-pawn.x}px, ${-pawn.y}px, ${-pawn.z}px)`;
 
     debug.innerHTML = `
         HOLD SHIFT TO SPRINT<br>
         AVOID RED LAVA<br>
-        CLICK TO SHOOT BULLETS<br>
+        ${hasGun ? "CLICK TO SHOOT BULLETS" : "FIND THE GUN TO SHOOT"}<br>
         Height: ${Math.abs(pawn.y).toFixed(0)}<br>
-        Bullets: ${myBullets.length}
+        Bullets: ${myBullets.length}<br>
+        ${hasGun ? "GUN: ✓" : "GUN: ✗"}
     `;
 }
 
 setInterval(update, 20);
 
 // ==========================================
-// 5. RENDERING
+// 6. RENDERING (with gun spawn)
 // ==========================================
 function drawMyWorld(squares, name) {
     let frag = document.createDocumentFragment();
@@ -337,10 +523,13 @@ function drawMyWorld(squares, name) {
         frag.appendChild(el);
     }
     world.appendChild(frag);
+    
+    // Create gun after level is drawn
+    createGun();
 }
 
 // ==========================================
-// 6. COLLISION (With Lava & Platform Logic)
+// 7. COLLISION (With Lava & Platform Logic)
 // ==========================================
 function collision(mapObj, leadObj) {
     onGround = false;

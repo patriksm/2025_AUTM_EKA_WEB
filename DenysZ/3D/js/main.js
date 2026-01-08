@@ -1,4 +1,14 @@
 const DEG = Math.PI / 180;
+const TARGET_SIZE = 40;
+const TARGET_Z_OFFSET = 40;
+const WALL_Z = -1000;
+const WALL_TOP = -650;
+const WALL_BOTTOM = 850;
+const MARGIN = 10;
+const SPAWN_PADDING = 90;
+const shotSound = new Audio("sounds/shot.mp3");
+const hitSound = new Audio("sounds/hit.mp3");
+
 var world = document.getElementById("world");
 var container = document.getElementById("container");
 
@@ -17,12 +27,36 @@ crosshair.style.left = "50%";
 crosshair.style.top = "50%";
 crosshair.style.width = "6px";
 crosshair.style.height = "6px";
-crosshair.style.marginLeft = "40px";
-crosshair.style.marginTop = "-10px";
+crosshair.style.marginLeft = "0px";
+crosshair.style.marginTop = "0px";
 crosshair.style.background = "green";
 crosshair.style.borderRadius = "50%";
 crosshair.style.zIndex = "999";
 container.appendChild(crosshair);
+
+let hud = document.createElement("div");
+hud.style.position = "absolute";
+hud.style.left = "20px";
+hud.style.top = "20px";
+hud.style.color = "lime";
+hud.style.fontFamily = "monospace";
+hud.style.fontSize = "20px";
+hud.style.zIndex = "10000";
+hud.style.userSelect = "none";
+container.appendChild(hud);
+
+let resetHint = document.createElement("div");
+resetHint.style.position = "absolute";
+resetHint.style.right = "20px";
+resetHint.style.top = "20px";
+resetHint.style.color = "blue";
+resetHint.style.fontFamily = "monospace";
+resetHint.style.fontSize = "14px";
+resetHint.style.opacity = "0.8";
+resetHint.style.userSelect = "none";
+resetHint.innerText = "press R to reset your points";
+
+container.appendChild(resetHint);
 
 function player(x, y, z, rx, ry, vx, vy, vz) {
     this.x = x;
@@ -36,10 +70,14 @@ function player(x, y, z, rx, ry, vx, vy, vz) {
     this.onGround = false;
 }
 
-var pawn = new player(0, 0, 0, 0, 0, 5, 5, 5);
+var pawn = new player(0, 0, 0, 0, 0, 5, 6, 5);
 var myBullets = [];
 var myBulletNumber = 0;
-// var myBulletsData = 
+var myBulletsData = [];
+
+let score = 0;
+let bestScore = Number(localStorage.getItem("bestScore")) || 0;
+
 
 let squares = [
     [500, 300, 100, 0, 0, 0, 200, 200, "blueviolet", 0.5],
@@ -100,8 +138,56 @@ let myRoom = [
     [500, -225, 0, -90, 0, 0, 150, 150, "gold", 1],
 ];
 
+let aimZone = {
+    xMin: -1000 + TARGET_SIZE / 2 + MARGIN,
+    xMax:  1000 - TARGET_SIZE / 2 - MARGIN,
+
+    yMin: WALL_TOP + TARGET_SIZE / 2 + MARGIN,
+    yMax: WALL_BOTTOM - TARGET_SIZE / 2 - MARGIN,
+
+    z: WALL_Z
+};
+
+
 drawMyWorld(myRoom, "wall")
-//drawWorld(squares, "cube");
+
+// aim wall
+const aimWall = {
+    x: 0,
+    y: 0,
+    z: -900,
+    width: 600,
+    height: 400
+};
+
+const aimFrame = document.createElement("div");
+aimFrame.style.position = "absolute";
+aimFrame.style.width = aimWall.width + "px";
+aimFrame.style.height = aimWall.height + "px";
+aimFrame.style.border = "3px dashed lime";
+aimFrame.style.boxSizing = "border-box";
+aimFrame.style.pointerEvents = "none";
+
+aimFrame.style.transform = `
+    translate3d(
+        ${600 + aimWall.x - aimWall.width / 2}px,
+        ${400 + aimWall.y - aimWall.height / 2}px,
+        ${aimWall.z}px
+    )
+`;
+
+world.appendChild(aimFrame);
+
+const aimTarget = document.createElement("div");
+aimTarget.style.position = "absolute";
+aimTarget.style.width = TARGET_SIZE + "px";
+aimTarget.style.height = TARGET_SIZE + "px";
+aimTarget.style.background = "red";
+aimTarget.style.zIndex = "9999";
+
+world.appendChild(aimTarget);
+
+const targetPos = { x: 0, y: 0, z: aimWall.z + 1 };
 
 var pressForward = pressBack = pressRight = pressLeft = pressUp = 0;
 var mouseX = mouseY = 0;
@@ -149,31 +235,47 @@ document.addEventListener("keyup", (event) => {
     }
 })
 
+document.addEventListener("keydown", (e) => {
+    if (e.key == "r" || e.key == "R") {
+        resetPoints();
+    }
+});
+
 document.addEventListener("mousemove", (event) => {
     mouseX = event.movementX;
     mouseY = event.movementY;
 })
 
+document.onclick = function () {
+    if (lock) {
+        myBullets.push(drawMyBullet(myBulletNumber));
+        myBulletsData.push({
+            x: pawn.x,
+            y: pawn.y,
+            z: pawn.z,
+            rx: pawn.rx,
+            ry: pawn.ry,
+            speed: 50
+        });
+        myBulletNumber++;
+    }
+};
+
+
 function update() {
     dz = +(pressRight - pressLeft) * Math.sin(pawn.ry * DEG) - (pressForward - pressBack) * Math.cos(pawn.ry * DEG);
     dx = +(pressRight - pressLeft) * Math.cos(pawn.ry * DEG) + (pressForward - pressBack) * Math.sin(pawn.ry * DEG);
-    dy += gravity;
-
-    //   dx = -(pressLeft - pressRight) * Math.cos(pawn.ry * deg) + (pressForward - pressBack) * Math.sin(pawn.ry * deg);
-    //let dz = pressForward - pressBack;
-    // dz = -(pressLeft - pressRight) * Math.sin(pawn.ry * deg) - (pressForward - pressBack) * Math.cos(pawn.ry * deg);
+    onGround = false;
 
     let drx = mouseY * mouseSensitivity;
     let dry = mouseX * mouseSensitivity;
 
     mouseX = mouseY = 0;
 
-    if (onGround) {
-        dy = 0;
-        if (pressUp) {
-            dy = -pressUp;
-            onGround = false;
-        }
+    if (!onGround) {
+        dy += gravity;
+    } else {
+        dy = Math.min(dy, 0);
     }
 
     collision(myRoom, pawn);
@@ -181,6 +283,15 @@ function update() {
     pawn.z += dz;
     pawn.x += dx;
     pawn.y += dy;
+
+    if (onGround) {
+        if (pressUp) {
+            dy = -pressUp;
+            onGround = false;
+        } else {
+            dy = 0;
+        }
+    }
 
     if (lock) {
         pawn.rx += drx;
@@ -193,20 +304,72 @@ function update() {
         }
     }
 
-    document.onclick = function () {
-        if (lock) {
-            myBullets.push(drawMyBullet(myBulletNumber));
-            myBulletsData.push(new player(pawn.x, pawn.y, pawn.z, pawn.rx, pawn.ry, 0, 0, 0));
-            console.log(myBullets);
-            console.log(myBulletsData);
-            myBulletNumber++;
-        }
-
-    }
+    
 
     world.style.transform = `translateZ(600px) rotateX(${-pawn.rx}deg) rotateY(${pawn.ry}deg) translate3d(${-pawn.x}px, ${-pawn.y}px, ${-pawn.z}px)`;
+
+    for (let i = myBullets.length - 1; i >= 0; i--) {
+    let b = myBulletsData[i];
+
+    b.x += Math.sin(b.ry * DEG) * b.speed;
+    b.z -= Math.cos(b.ry * DEG) * b.speed;
+    b.y += Math.sin(b.rx * DEG) * b.speed;
+
+    myBullets[i].style.transform = `
+        translate3d(
+            ${600 + b.x}px,
+            ${400 + b.y}px,
+            ${b.z}px
+        )
+    `;
+
+    if (Math.abs(b.z) > 3000) {
+        myBullets[i].remove();
+        myBullets.splice(i, 1);
+        myBulletsData.splice(i, 1);
+        continue;
+    }
+
+    let dxT = b.x - targetPos.x;
+    let dyT = b.y - targetPos.y;
+    let dzT = b.z - targetPos.z;
+
+    // hit check
+    if (dxT*dxT + dyT*dyT + dzT*dzT < 30*30) {
+    playHitSound();
+    spawnTarget();
+    score++;
+
+    if (score > bestScore) {
+        bestScore = score;
+        localStorage.setItem("bestScore", bestScore);
+    }
+
+    updateHUD();
+
+    myBullets[i].remove();
+    myBullets.splice(i, 1);
+    myBulletsData.splice(i, 1);
+    }
+
+    if (!aimTarget.style.transform.includes("translate3d")) {
+    spawnTarget();
+    }
+}
 }
 
+
+function clamp(v, min, max) {
+    return Math.max(min, Math.min(max, v));
+}
+
+function updateHUD() {
+    hud.innerHTML = `
+        SCORE: ${score}<br>
+        BEST: ${bestScore}<br>
+    `;
+}
+updateHUD();
 function collision(mapObj, leadObj, type) {
     for (let i = 0; i < mapObj.length; i++) {
         //spēlētāja koordinātes katra taiststūra koordināšu sistēmā
@@ -245,6 +408,7 @@ function collision(mapObj, leadObj, type) {
         }
     };
 }
+
 
 function coorTransform(x0, y0, z0, rxc, ryc, rzc) {
     let x1 = x0;
@@ -300,15 +464,84 @@ function drawMyWorld(squares, name) {
     }
 }
 
+function spawnTarget() {
+    const halfW = aimWall.width / 2;
+    const halfH = aimWall.height / 2;
+
+    const minX = aimWall.x - halfW + SPAWN_PADDING;
+    const maxX = aimWall.x + halfW - SPAWN_PADDING - TARGET_SIZE;
+
+    const minY = aimWall.y - halfH + SPAWN_PADDING;
+    const maxY = aimWall.y + halfH - SPAWN_PADDING - TARGET_SIZE;
+
+    const x = minX + Math.random() * (maxX - minX);
+    const y = minY + Math.random() * (maxY - minY);
+
+    targetPos.x = x;
+    targetPos.y = y;
+    targetPos.z = aimWall.z + 20; // всегда ЧУТЬ перед стеной
+
+    aimTarget.style.transform = `
+        translate3d(
+            ${600 + x}px,
+            ${400 + y}px,
+            ${targetPos.z}px
+        )
+    `;
+}
+
+// target moving in random pos
+function hitTarget() {
+    spawnTarget();
+}
+
+hitTarget();
+
+
 function drawMyBullet(num) {
     let myBullet = document.createElement("div");
     myBullet.id = `bullet_${num}`;
-    myBullet.style.display = "block";
     myBullet.style.position = "absolute";
-    myBullet.style.width = `20px`;
-    myBullet.style.height = `20px`;
-    myBullet.style.borderRadius = `50%`;
-    myBullet.style.backgroundColor = `red`;
+    myBullet.style.width = "20px";
+    myBullet.style.height = "20px";
+    myBullet.style.borderRadius = "50%";
+    myBullet.style.backgroundColor = "red";
+
+    myBullet.style.transform = `
+        translate3d(
+            ${600 + pawn.x}px,
+            ${400 + pawn.y}px,
+            ${pawn.z}px
+        )
+    `;
+
     world.appendChild(myBullet);
     return myBullet;
 }
+
+function playShotSound() {
+    const s = shotSound.cloneNode();
+    s.volume = 0.4;
+    s.play();
+}
+
+document.addEventListener("mousedown", () => {
+    playShotSound();
+});
+
+function playHitSound() {
+    const s = hitSound.cloneNode();
+    s.volume = 0.3;
+    s.play();
+}
+
+function resetPoints() {
+    score = 0;
+    bestScore = 0;
+    localStorage.removeItem("bestScore");
+    updateHUD();
+}
+
+
+spawnTarget();
+updateHUD();

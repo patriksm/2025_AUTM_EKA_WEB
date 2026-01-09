@@ -1,8 +1,0 @@
-import React, { SVGProps } from 'react'
-
-export function TemakiRailing(props: SVGProps<SVGSVGElement>) {
-  return (
-    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 15 15" {...props}>{/* Icon from Temaki by Bryan Housel - https://creativecommons.org/publicdomain/zero/1.0/ */}<path fill="currentColor" d="M13.5 12H13V4.5a.5.5 0 0 0-1 0V5H3v-.5a.5.5 0 0 0-1 0V12h-.5a.5.5 0 0 0 0 1h2a.5.5 0 0 0 0-1H3v-1h9v1h-.5a.5.5 0 0 0 0 1h2a.5.5 0 0 0 0-1M3 10V6h1v4Zm2 0V6h1v4Zm2 0V6h1v4Zm2 0V6h1v4Zm3 0h-1V6h1Z" /></svg>
-  )
-}
-export default TemakiRailing

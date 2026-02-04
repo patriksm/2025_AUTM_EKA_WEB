@@ -1,0 +1,120 @@
+import pygame
+import random
+import sys
+
+pygame.init()
+
+CELL_SIZE = 32
+GRID_WIDTH = 17
+GRID_HEIGHT = 17
+WIDTH = CELL_SIZE * GRID_WIDTH
+HEIGHT = CELL_SIZE * GRID_HEIGHT + 64  # место для верхней панели
+
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption("Snake Game")
+
+ground = pygame.image.load("ground.png").convert()
+
+WHITE = (255, 255, 255)
+RED = (255, 0, 0)
+GREEN = (0, 155, 0)
+DARKGREEN = (0, 100, 0)
+
+# pygame.mixer.init()
+# eat_sound = pygame.mixer.Sound("eat.wav")
+
+class Snake:
+    def __init__(self):
+        self.body = [(100, 100), (90, 100), (80, 100)]
+        self.direction = "RIGHT"
+
+    def move(self):
+        x, y = self.body[0]
+        if self.direction == "UP":
+            y -= CELL_SIZE
+        elif self.direction == "DOWN":
+            y += CELL_SIZE
+        elif self.direction == "LEFT":
+            x -= CELL_SIZE
+        elif self.direction == "RIGHT":
+            x += CELL_SIZE
+        new_head = (x, y)
+        self.body = [new_head] + self.body[:-1]
+
+    def grow(self):
+        self.body.append(self.body[-1])
+
+    def draw(self):
+        for segment in self.body:
+            pygame.draw.rect(screen, DARKGREEN, pygame.Rect(segment[0], segment[1], CELL_SIZE, CELL_SIZE))
+            pygame.draw.rect(screen, GREEN, pygame.Rect(segment[0] + 4, segment[1] + 4, CELL_SIZE - 8, CELL_SIZE - 8))
+
+class Food:
+    def __init__(self):
+        self.position = self.random_position()
+
+    def random_position(self):
+        return (
+            random.randint(0, GRID_WIDTH - 1) * CELL_SIZE,
+            random.randint(2, GRID_HEIGHT - 1) * CELL_SIZE,
+        )
+
+    def draw(self):
+        pygame.draw.circle(screen, RED, (self.position[0] + CELL_SIZE // 2, self.position[1] + CELL_SIZE // 2), CELL_SIZE // 2 - 4)
+def main():
+    clock = pygame.time.Clock()
+    snake = Snake()
+    food = Food()
+    score = 0
+    running = True
+
+    while running:
+        clock.tick(10)
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_UP] and snake.direction != "DOWN":
+            snake.direction = "UP"
+        elif keys[pygame.K_DOWN] and snake.direction != "UP":
+            snake.direction = "DOWN"
+        elif keys[pygame.K_LEFT] and snake.direction != "RIGHT":
+            snake.direction = "LEFT"
+        elif keys[pygame.K_RIGHT] and snake.direction != "LEFT":
+            snake.direction = "RIGHT"
+
+        snake.move()
+
+  
+        if snake.body[0] == food.position:
+            # eat_sound.play()
+            snake.grow()
+            score += 1
+            food = Food()
+
+        head_x, head_y = snake.body[0]
+        if (
+            head_x < 0 or head_x >= WIDTH
+            or head_y < 64 or head_y >= HEIGHT
+            or snake.body[0] in snake.body[1:]
+        ):
+            running = False
+
+     
+        screen.blit(ground, (0, 0))
+        snake.draw()
+        food.draw()
+
+        font = pygame.font.SysFont("Arial", 24)
+        score_text = font.render(f"Score: {score}", True, WHITE)
+        screen.blit(score_text, (10, 10))
+
+        pygame.display.update()
+
+    pygame.quit()
+    sys.exit()
+
+if __name__ == "__main__":
+    main()

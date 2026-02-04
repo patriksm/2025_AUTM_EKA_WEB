@@ -44,7 +44,6 @@ function collision(
 
           if (Math.abs(normal[1]) > 0.8) {
             if (point3[1] > point2[1]) {
-              // console.log("OnGround!")
               onGround = true;
             }
           } 

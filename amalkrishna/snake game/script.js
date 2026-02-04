@@ -1,87 +1,160 @@
-const canvas = document.getElementById("game"); //refering to the canvas element in html file
-const ctx = canvas.getContext("2d"); //enables us to use some tools for drawing such like fillRect, drawImage etc. 
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
 
-let myPlayground = new Image(); // create an empty Image object
-myPlayground.src = "img/ground.png"; // we set the property src equal to the path to the file we want to diplay 
-let myCarrot = new Image();
-myCarrot.src = "img/carrot.png";
+/* ---------- IMAGES ---------- */
+const playgroundImage = new Image();
+playgroundImage.src = "img/ground.png"; // your playground image
 
-let box = 32;
-let food_coords = {
-    x: (Math.trunc(17*Math.random())+1)*box,
-    y: (Math.trunc(15*Math.random())+3)*box, 
-    type: "carrot"
-}
+const normalFruits = [
+    "img/carrot.png",
+    "img/apple.png",
+    "img/banana.png",
+    "img/grape.png",
+    "img/pineapple.png"
+].map(src => {
+    const img = new Image();
+    img.src = src;
+    return img;
+});
 
-let snakeX = 0;
-let snakeY = 0;
+const bonusImage = new Image();
+bonusImage.src = "img/bonus.png";
+
+/* ---------- CONSTANTS ---------- */
+const box = 32;
+const CANVAS_SIZE = 608;
+const BONUS_EVERY = 3; // bonus appears every 3 fruits
+
+/* ---------- SPEED ---------- */
+const START_SPEED = 200;
+const SPEED_STEP = 8;
+const MIN_SPEED = 80;
+let speed = START_SPEED;
+let gameInterval = null;
+
+/* ---------- GAME STATE ---------- */
 let dir = "";
-let SCORE =0;
+let score = 0;
+let highScore = localStorage.getItem("highScore") || 0;
+let fruitsEaten = 0;
 
-let snake = [];
-snake[0] = {
-    x: 9*box,
-    y: 10*box
+/* ---------- SNAKE ---------- */
+let snake = [{ x: 9 * box, y: 10 * box }];
+
+/* ---------- FOOD ---------- */
+let food = null;
+
+/* ---------- CREATE FOOD ---------- */
+function createFood() {
+    let type;
+    if ((fruitsEaten + 1) % BONUS_EVERY === 0) {
+        type = "bonus";
+    } else {
+        type = "normal";
+    }
+    return {
+        x: Math.floor(Math.random() * 17 + 1) * box,
+        y: Math.floor(Math.random() * 15 + 3) * box,
+        type,
+        img: type === "bonus" ? bonusImage : normalFruits[Math.floor(Math.random() * normalFruits.length)]
+    };
 }
 
-document.addEventListener("keypress", (event) =>{
-    if(event.key == "w" && dir != "down") {
-        dir = "up";
-    }
-    if(event.key == "s" && dir != "up") {
-        dir = "down";
-    }
-    if(event.key == "a" && dir != "right") {
-        dir = "left";
-    }
-    if(event.key == "d" && dir != "left") {
-        dir = "right";
-    }
-})
+/* ---------- RESET GAME ---------- */
+function resetGame() {
+    clearInterval(gameInterval);
 
+    if (score > highScore) {
+        highScore = score;
+        localStorage.setItem("highScore", highScore);
+    }
 
-function drawGame(){ // the function for drawing the game
-    ctx.drawImage(myPlayground, 0, 0);
-    ctx.drawImage(myCarrot, food_coords.x, food_coords.y);
+    score = 0;
+    speed = START_SPEED;
+    dir = "";
+    fruitsEaten = 0;
+
+    snake = [{ x: 9 * box, y: 10 * box }];
+    food = createFood();
+
+    drawGame(); // draw initial state
+}
+
+/* ---------- CONTROLS ---------- */
+document.addEventListener("keydown", e => {
+    let newDir = dir;
+
+    if (e.key === "w" && dir !== "down") newDir = "up";
+    if (e.key === "s" && dir !== "up") newDir = "down";
+    if (e.key === "a" && dir !== "right") newDir = "left";
+    if (e.key === "d" && dir !== "left") newDir = "right";
+
+    if (newDir && !gameInterval) {
+        dir = newDir;
+        gameInterval = setInterval(drawGame, speed);
+    } else {
+        dir = newDir;
+    }
+});
+
+/* ---------- SPEED UP ---------- */
+function increaseSpeed() {
+    speed = Math.max(MIN_SPEED, speed - SPEED_STEP);
+    clearInterval(gameInterval);
+    gameInterval = setInterval(drawGame, speed);
+}
+
+/* ---------- DRAW GAME ---------- */
+function drawGame() {
+    ctx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+
+    // draw playground image
+    ctx.drawImage(playgroundImage, 0, 0, CANVAS_SIZE, CANVAS_SIZE);
+
+    // draw food
+    ctx.drawImage(food.img, food.x, food.y);
+
+    // draw score
+    ctx.fillStyle = "white";
+    ctx.font = "28px Arial";
+    ctx.fillText(`Score: ${score}`, box, 1.5 * box);
+    ctx.fillText(`High: ${highScore}`, 11 * box, 1.5 * box);
+
+    // draw snake
     ctx.fillStyle = "#FFE607";
-    for(let i = 0; i < snake.length; i++){
-        ctx.fillRect(snake[i].x, snake[i].y, box, box);
+    snake.forEach(part => ctx.fillRect(part.x, part.y, box, box));
+
+    if (!dir) return;
+
+    // move snake
+    let headX = snake[0].x;
+    let headY = snake[0].y;
+
+    if (dir === "right") headX += box;
+    if (dir === "left") headX -= box;
+    if (dir === "up") headY -= box;
+    if (dir === "down") headY += box;
+
+    // wall collision
+    if (headX < 0 || headX >= CANVAS_SIZE || headY < 2 * box || headY >= CANVAS_SIZE) {
+        resetGame();
+        return;
     }
 
-    snakeX = snake[0].x;
-    snakeY = snake[0].y;
-
-    if(dir == "right") snakeX += box;
-    if(dir == "up") snakeY -= box;
-    if(dir == "left") snakeX -= box;
-    if(dir == "down") snakeY += box;
-
-    //if the food is eaten
-    if(snakeX == food_coords.x && snakeY == food_coords.y){
-        food_coords = {
-            x: (Math.trunc(17*Math.random())+1)*box,
-            y: (Math.trunc(15*Math.random())+3)*box, 
-            type: "carrot"
-        }
-    } 
-    
-    else {
+    // food collision
+    if (headX === food.x && headY === food.y) {
+        fruitsEaten++;
+        score += food.type === "bonus" ? 5 : 1;
+        increaseSpeed();
+        food = createFood();
+    } else {
         snake.pop();
     }
 
-    if(snakeX < 1 || snakeX > 17*box){
-        clearInterval(myGame);
-    }
-    
-   
-
-    let newHead = {
-        x: snakeX,
-        y: snakeY
-    }
-
-    snake.unshift(newHead);
-
+    snake.unshift({ x: headX, y: headY });
 }
 
-let myGame = setInterval(drawGame, 100) // we create a refresh of the scene each 100 ms, each 100 ms the funciton drawGame will be used
+/* ---------- WAIT FOR PLAYGROUND IMAGE ---------- */
+playgroundImage.onload = () => {
+    resetGame(); // start only when playground image is loaded
+};

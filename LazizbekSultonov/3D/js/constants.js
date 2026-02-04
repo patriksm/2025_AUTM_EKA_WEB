@@ -1,0 +1,9 @@
+var deg = Math.PI / 180;
+var level = 0;
+var g = 0.1;
+var onGround = false;
+var canlock = false;
+var activeObjects = [];
+var dx = 0;
+var dy = 0;
+var dz = 0;

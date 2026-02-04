@@ -130,7 +130,10 @@ function update() {
     document.onclick = function () {
         if (lock) {
             myBullets.push(drawMyBullet(myBulletNumber));
-            myBulletsData.push(new player(pawn.x, pawn.y, pawn.z, pawn.rx, pawn.ry, 5, 5, 5));
+            myBulletsData.push(new player(pawn.x, pawn.y, pawn.z, pawn.rx, pawn.ry, 0, 0, 0));
+            console.log(myBullets);
+            console.log(myBulletsData);
+            console.log(pawn);
             myBulletNumber++;
 
             console.log(myBulletNumber);
@@ -142,16 +145,9 @@ function update() {
         }
     }
 
-    for (let i = 0; i < myBullets.length; i++) {
-        dzb = +(myBulletsData[i].vx) * Math.sin((myBulletsData[i].ry - 45) * DEG) - (myBulletsData[i].vz) * Math.cos((myBulletsData[i].ry - 45) * DEG);
-        dxb = +(myBulletsData[i].vx) * Math.cos((myBulletsData[i].ry - 45) * DEG) + (myBulletsData[i].vz) * Math.sin((myBulletsData[i].ry - 45) * DEG);
-
-        myBulletsData[i].x += dxb;
-        myBulletsData[i].z += dzb;
-        // myBulletsData[i].ry += 45; (SPIN)
-
-        myBullets[i].style.transform = `translate3d(${600 + myBulletsData[i].x - 25}px, ${400 + myBulletsData[i].y - 25}px, ${myBulletsData[i].z}px) rotateX(${myBulletsData[i].rx}deg) rotateY(${-myBulletsData[i].ry}deg)`;
-    }
+    // for (let i = 0; i < myBullets.length; i++) {
+    //     myBullets[i].style.transform = `translateZ(600px) rotateX(${-myBulletsData[i].rx}deg) rotateY(${myBulletsData[i].ry}deg) translate3d(${-myBulletsData[i].x}px, ${-myBulletsData[i].y}px, ${-myBulletsData[i].z}px)`;
+    // }
 
     world.style.transform = `translateZ(600px) rotateX(${-pawn.rx}deg) rotateY(${pawn.ry}deg) translate3d(${-pawn.x}px, ${-pawn.y}px, ${-pawn.z}px)`;
 }
@@ -260,7 +256,7 @@ function drawMyBullet(num) {
     myBullet.style.height = `50px`;
     myBullet.style.borderRadius = `50%`;
     myBullet.style.backgroundColor = `red`;
-    myBullet.style.transform = `translate3d(${600 + pawn.x - 25}px, ${400 + pawn.y - 25}px, ${pawn.z}px) rotateX(${pawn.rx}deg) rotateY(${-pawn.ry}deg)`;
+    myBullet.style.transform = `translate3d(${600+pawn.x-25}px, ${400+pawn.y-25}px, ${pawn.z}px) rotateX(${pawn.rx}deg) rotateY(${-pawn.ry}deg)`
     world.appendChild(myBullet);
     return myBullet;
 }

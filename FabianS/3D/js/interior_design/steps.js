@@ -251,7 +251,6 @@ function step_handgriff() {
                 0,
                 200,
                 95,
-                // "rgba(160,160,160,0.1)",
                 "rgba(160,160,160,1)",
                 1,
                 railing
@@ -277,7 +276,6 @@ function step_handgriff() {
                 0,
                 200,
                 60,
-                // "rgba(160,160,160,0.1)",
                 "rgba(0,0,160,1)",
                 1,
                 railing
@@ -291,7 +289,6 @@ function step_handgriff() {
                 90,
                 200,
                 10,
-                // "rgba(160,160,160,0.1)",
                 "rgba(0,0,160,1)",
                 1,
                 railing
@@ -305,7 +302,6 @@ function step_handgriff() {
                 0,
                 10,
                 60,
-                // "rgba(160,160,160,0.1)",
                 "rgba(0,0,160,1)",
                 1,
                 railing
@@ -319,7 +315,6 @@ function step_handgriff() {
                 0,
                 10,
                 60,
-                // "rgba(160,160,160,0.1)",
                 "rgba(0,0,160,1)",
                 1,
                 railing
@@ -343,7 +338,6 @@ function step_handgriff() {
                 0,
                 200,
                 60,
-                // "rgba(160,160,160,0.1)",
                 "rgba(0,0,160,1)",
                 1,
                 railing
@@ -357,7 +351,6 @@ function step_handgriff() {
                 90,
                 200,
                 10,
-                // "rgba(160,160,160,0.1)",
                 "rgba(0,0,160,1)",
                 1,
                 railing
@@ -371,7 +364,6 @@ function step_handgriff() {
                 0,
                 10,
                 60,
-                // "rgba(160,160,160,0.1)",
                 "rgba(0,0,160,1)",
                 1,
                 railing
@@ -385,7 +377,6 @@ function step_handgriff() {
                 0,
                 10,
                 60,
-                // "rgba(160,160,160,0.1)",
                 "rgba(0,0,160,1)",
                 1,
                 railing
@@ -406,16 +397,9 @@ function step_floor_adapter(){
             y: 0,
             z: 0.3,
         },
-        // {
-        //     x: 1,
-        //     y: 0,
-        //     z: 1,
-        // },
     ]
     let zz = 1
-    // for(let c = 0; c < abstaende.length; c++){
     for(let c = 0; c < 2; c++){
-        // zz = 1
         if (c == 1){
             zz = - 1
         }
@@ -429,7 +413,6 @@ function step_floor_adapter(){
                 0,
                 200,
                 160,
-                // "rgba(160,160,160,0.1)",
                 "rgba(160,160,160,1)",
                 1,
                 steps_hold
@@ -445,7 +428,6 @@ function step_floor_adapter(){
                 0,
                 200,
                 110,
-                // "rgba(160,160,160,0.1)",
                 "rgba(160,160,160,1)",
                 1,
                 steps_hold
@@ -459,7 +441,6 @@ function step_floor_adapter(){
                 0,
                 200,
                 60,
-                // "rgba(160,160,160,0.1)",
                 "rgba(160,160,160,1)",
                 1,
                 steps_hold

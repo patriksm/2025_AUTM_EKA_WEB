@@ -25,7 +25,54 @@
     top: 390px;
     left: 590px;
 }
-
+#points {
+    position: absolute;
+    width: auto;
+    height: auto;
+    top: 20px;
+    left: 20px;
+    font-size: xx-large;
+}
+#height {
+    position: absolute;
+    width: auto;
+    height: auto;
+    top: 60px;
+    left: 20px;
+    font-size: xx-large;
+}
+#x {
+    position: absolute;
+    width: auto;
+    height: auto;
+    top: 100px;
+    left: 20px;
+    font-size: xx-large;
+}
+#y {
+    position: absolute;
+    width: auto;
+    height: auto;
+    top: 140px;
+    left: 20px;
+    font-size: xx-large;
+}
+#dz{
+    position: absolute;
+    width: auto;
+    height: auto;
+    top: 180px;
+    left: 20px;
+    font-size: xx-large;
+}
+ #dx {
+    position: absolute;
+    width: auto;
+    height: auto;
+    top: 220px;
+    left: 20px;
+    font-size: xx-large;
+}
 #container{
     position: absolute;
     width: 1200px;

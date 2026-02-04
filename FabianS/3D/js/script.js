@@ -6,8 +6,20 @@
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 const DEG = Math.PI / 180;
 
+let dzb
+let dxb
 let container = document.getElementById("container")
 var world = document.getElementById("world");
+let points_anzeige = document.getElementById("points")
+let height_anzeige = document.getElementById("height")
+let x_anzeige = document.getElementById("x")
+let y_anzeige = document.getElementById("y")
+let dx_anzeige = document.getElementById("dx")
+let dz_anzeige = document.getElementById("dz")
+
+let counter_points = 0
+
+let lastHitId = null;
 
 
 let drx = 0;
@@ -18,36 +30,44 @@ let dy = 0;
 let dz = 0
 
 
-let gravity = 0.2
 
-// geeignet um ausserhalb der Kontur zu sein und Features zu testen 
-let jump 
+let jump
 jump = true
-// jump = false 
 
-let move = 0;
+
 let mySquares = []
 let mouseX = 0
 let mouseY = 0;
-let mouseSensitivity = 0.5
 
+let transportBox = []
+let transportBoxData = []
+let id_transportbox = "transport_box_1"
 
-let onGround = false; 
+let onGround = false;
 
 let pressForward = 0
-let pawn 
-// window.pawn = pawn 
+let pawn
+
 
 let pressBack = 0
 let pressRight = 0
 let pressLeft = 0;
 let pressUp = 0
 
-let lock = false 
+let lock = false
 
-// 3x3 2d Rotation
+let my_items = []
+let myItemsData = []
+let myItemsCounter = 0
 
-// Konstruktor
+
+let my_shooting_bullets = []
+let myBulletData = []
+let myBulletsShooting = 0
+
+
+
+
 function player(
     x,
     y,
@@ -57,7 +77,7 @@ function player(
     vx,
     vy,
     vz
-){
+) {
     this.x = x;
     this.y = y;
     this.z = z;
@@ -66,12 +86,44 @@ function player(
     this.vx = vx;
     this.vy = vy;
     this.vz = vz;
-    this.onGround = false 
+    this.onGround = false
 }
 
+document.onclick = function () {
+    if (lock) {
+        let newBullet = drawMyBullet(myBulletsShooting++)
+        my_shooting_bullets.push(newBullet)
 
-function update(){
-    // original
+
+        myBulletData.push(
+            new player(
+                pawn.x,
+                pawn.y,
+                pawn.z,
+                pawn.rx,
+                pawn.ry,
+                bulletSpeed,
+                bulletSpeed,
+                bulletSpeed
+            )
+        )
+
+
+    }
+
+}
+
+function update() {
+
+    updateBullets()
+
+    updateItems(0.01)
+
+    // update_transportbox()
+    checkPawnItemHits()
+    checkHits()
+
+    checkTransport()
     dz = +(pressRight - pressLeft) * Math.sin(pawn.ry * DEG) - (pressForward - pressBack) * Math.cos(pawn.ry * DEG)
     dx = +(pressRight - pressLeft) * Math.cos(pawn.ry * DEG) + (pressForward - pressBack) * Math.sin(pawn.ry * DEG)
     dy += gravity;
@@ -80,16 +132,15 @@ function update(){
     if (onGround) {
         dy = 0;
         if (pressUp) {
-            console.log("jump");
             dy = -pressUp;
             onGround = false;
         }
     }
     let drx = mouseY * mouseSensitivity;
     let dry = mouseX * mouseSensitivity;
-    
+
     collision(
-        window.myRoom, 
+        window.myRoom,
         pawn
     )
 
@@ -100,10 +151,11 @@ function update(){
     pawn.x += dx;
     pawn.y += dy
 
-    
+
 
     if (lock) {
         pawn.rx += drx;
+
         if (pawn.rx > 57) {
             pawn.rx = 57;
         } else if (pawn.rx < -57) {
@@ -112,34 +164,17 @@ function update(){
         pawn.ry += dry;
     }
 
+    world.style.transform = `
+        translateZ(600px) 
+        rotateX(${-pawn.rx}deg) 
+        rotateY(${pawn.ry}deg) 
+        translate3d(
+            ${-pawn.x}px, 
+            ${-pawn.y}px
+            ,${-pawn.z}px
+        )
+    `;
 
-
-    if(jump){
-        world.style.transform = `
-            translateZ(600px) 
-            rotateX(${-pawn.rx}deg) 
-            rotateY(${pawn.ry}deg) 
-            translate3d(
-                ${-pawn.x}px, 
-                ${-pawn.y}px
-                ,${-pawn.z}px
-            )
-        `;
-    }
-    else{
-        world.style.transform = `
-            translateZ(600px) 
-            rotateX(${-pawn.rx}deg) 
-            rotateY(${pawn.ry}deg) 
-            translate3d(
-                ${-pawn.x}px, 
-                0px
-                ,${-pawn.z}px
-            )
-        `; 
-    }
-
-    // interactTeleport(spelesElementi[level][2], izvObj)
 }
 
 
@@ -148,54 +183,33 @@ let game = setInterval(
     update,
     10
 );
-if(jump){
-    pawn = new player(
-        0,
-        0,
-        0,
-        0,
-        -90,// Rotation um y
-        7,
-        7,
-        7
-    );
-}
-else{
-    pawn = new player(
-        -2000,
-        0,
-        0,
-        0,
-        0,
-        7,
-        7,
-        7
-    );
-}
+
+
+
+
+pawn = new player(
+    0,
+    0,
+    0,
+    0,
+    -90,
+    player_speed,
+    player_speed,
+    player_speed
+);
+
 
 
 document.addEventListener("pointerlockchange", (event) => {
     lock = !lock;
 })
 container.onclick = function () {
-    if(!lock){
+    if (!lock) {
         container.requestPointerLock();
     }
 }
 
 
-
-
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-// draw My World
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-
-
-
-// Würfel 
-// drawMyWorld(squares, "MMM");
 
 
 
@@ -206,44 +220,122 @@ container.onclick = function () {
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 document.addEventListener("keydown", (event) => {
-    if(event.key == "w"){
+    if (event.key == "w" || event.key == "ArrowUp") {
         pressForward = pawn.vz;
     }
-    if(event.key == "s"){
+    if (event.key == "s" || event.key == "ArrowDown") {
         pressBack = pawn.vz;
     }
-    if(event.key == "d"){
+    if (event.key == "d" || event.key == "ArrowRight") {
         pressRight = pawn.vx;
     }
-    if(event.key == "a"){
+    if (event.key == "a" || event.key == "ArrowLeft") {
         pressLeft = pawn.vx;
     }
     if (event.key == " ") {
-        // console.log("pressUP"),
         pressUp = pawn.vy;
     }
+
 })
 
 document.addEventListener("keyup", (event) => {
-if(event.key == "w"){
+    if (event.key == "w" || event.key == "ArrowUp") {
         pressForward = 0;
     }
-    if(event.key == "s"){
+    if (event.key == "s" || event.key == "ArrowDown") {
         pressBack = 0;
     }
-    if(event.key == "d"){
+    if (event.key == "d" || event.key == "ArrowRight") {
         pressRight = 0;
     }
-    if(event.key == "a"){
+    if (event.key == "a" || event.key == "ArrowLeft") {
         pressLeft = 0;
     }
     if (event.key == " ") {
-        // console.log("asda")
         pressUp = 0;
     }
 })
 
-document.addEventListener("mousemove",(event) => {
+document.addEventListener("mousemove", (event) => {
     mouseX = event.movementX;
     mouseY = event.movementY;
 })
+
+
+function update_points(num) {
+    points_anzeige.textContent = `Points: ${num} / ${myItemsCounter}`
+}
+function getAllItemsRemoved() {
+    return myItemsCounter == counter_points
+}
+
+function add_items() {
+
+    spawnItem({
+        x: 0,
+        y: 30,
+        z: -900,
+        size: 100,
+        rx: 0,
+        ry: 90,
+        rz: 0
+    });
+
+
+    spawnItem({
+        x: 300,
+        y: 30,
+        z: -700,
+        size: 100,
+        rx: 0,
+        ry: 90,
+        rz: 0
+    });
+    spawnItem({
+        x: -300,
+        y: -140,
+        z: -700,
+        size: 100,
+        rx: 0,
+        ry: 90,
+        rz: 0
+    });
+    spawnItem({
+        x: -300,
+        y: -200,
+        z: 900,
+        size: 100,
+        rx: 0,
+        ry: 90,
+        rz: 0
+    });
+    spawnItem({
+        x: 700,
+        y: 30,
+        z: 900,
+        size: 100,
+        rx: 0,
+        ry: 0,
+        rz: 90
+    });
+
+    update_points(counter_points)
+}
+
+
+
+
+
+var panemsanasSkana = new Audio;
+panemsanasSkana.src = "./audio/thing.mp3";
+
+var soluSkana = new Audio;
+soluSkana.src = "./audio/walking.mp3";
+
+var kludasSkana = new Audio;
+kludasSkana.src = "./audio/mistake.mp3"
+
+var teleportaSkana = new Audio;
+teleportaSkana.src = "./audio/win.mp3"
+
+add_items()

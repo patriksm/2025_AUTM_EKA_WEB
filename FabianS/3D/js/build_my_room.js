@@ -1,12 +1,11 @@
-// js/my_room.js
 
-// import { interior_design } from "./interior_design/stair_one.js";
 
-// let world = document.getElementById("world");
+
 myRoom = window.myRoom;
 let step_temp
 let allSteps = [];
 let addition_walls = []
+
 let faktor_y = 100
 let faktor_x = 400
 let faktor_z = 400
@@ -42,14 +41,16 @@ function drawMyWorld(squares, name) {
         }
 
         mySquare1.style.transform =
-            `translate3d(
+        `
+            translate3d(
                 ${600 + squares[i][0] - squares[i][6] / 2}px,
                 ${400 + squares[i][1] - squares[i][7] / 2}px,
                 ${squares[i][2]}px
             )
             rotateX(${squares[i][3]}deg)
             rotateY(${squares[i][4]}deg)
-            rotateZ(${squares[i][5]}deg)`;
+            rotateZ(${squares[i][5]}deg)
+        `;
 
         mySquare1.style.opacity = squares[i][9];
         world.appendChild(mySquare1);
@@ -65,13 +66,6 @@ myRoom = [...myRoom, ...steps];
 let add_walls
 add_walls = interrior_walls()
 myRoom = [...myRoom, ...add_walls];
-
-
-// add_walls = bruecken()
-// myRoom = [...myRoom, ...add_walls];
-
-// add_walls = wuerfel()
-// myRoom = [...myRoom, ...add_walls];
 
 
 add_walls = tunnel()
@@ -96,19 +90,7 @@ myRoom = [...myRoom, ...add_walls];
 drawMyWorld(myRoom, "wall");
 
 
-function zahl_87(min, max) {
-    let attr = `
-    Unglückszahl 87 und sind die letzten beiden Ziffern der Zahl von Grahams
-    `
 
-    return Math.round(Math.random() * (max - min)) + min;
-}
-function zahl_269(min, max) {
-    let attr = `
-    Zahl 269 
-    `
-    return Math.round(Math.random() * (max - min)) + min;
-}
 
 
 function getRandomInt(min, max) {

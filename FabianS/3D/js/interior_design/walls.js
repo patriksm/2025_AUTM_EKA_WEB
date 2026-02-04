@@ -54,7 +54,7 @@ function interrior_walls(){
             205,
             "#a0a0a0",
             1,
-            // structures[4]
+            structures[4]
         ],
         [
             200 + faktor_x * x_abstand,

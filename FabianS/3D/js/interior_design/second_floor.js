@@ -3,8 +3,6 @@ function second_floor_front_and_behind() {
     let beleuchtung = structures[11]
     let height_second_floor_side_one = 200
     let width_second_floor_side_one = width_room - width_stair - 198
-    let height_second_floor_side_two = 200
-    let width_second_floor_side_two = 200
     let abstaende = [
         {
             x: 0,
@@ -23,7 +21,6 @@ function second_floor_front_and_behind() {
         let x_abstand = x;
         let y_abstand = y;
         let z_abstand = z;
-        console.log(x, y, z, abstaende.length)
         let add_wall = [
             // floor 
             [
@@ -314,27 +311,10 @@ function second_floor_left_and_right() {
             0,
             90,
             1600,
-            // "rgba(160,160,160,1)",
             "rgba(160,160,160,0.01)",
             1,
             // surface_light
         ],
-        // rechts
-        // [
-        //     // Einkommentieren wenn Tunnel weg ist
-        //     1700 + faktor_x * x_abstand,
-        //     -140 - faktor_y * y_abstand,
-        //     - width_room / 2 + 200 + faktor_z * z_abstand,
-        //     0,
-        //     0,
-        //     90,
-        //     90,
-        //     1400,
-        //     // "rgba(160,160,160,1)",
-        //     "rgba(160,160,160,0.01)",
-        //     1,
-        //     // surface_light
-        // ],
         [
             1700 + faktor_x * x_abstand,
             -140 - faktor_y * y_abstand,
@@ -344,7 +324,6 @@ function second_floor_left_and_right() {
             90,
             90,
             1400,
-            // "rgba(160,160,160, 1)",
             "rgba(160,160,160,0.01)",
             1,
             // surface_light
@@ -358,26 +337,10 @@ function second_floor_left_and_right() {
             90,
             90,
             1300,
-            // "rgba(160,160,160,1)",
             "rgba(160,160,160,0.01)",
             1,
             // surface_light
         ],
-        // [
-        //     // Einkommentieren wenn Tunnel weg ist
-        //     1000 + faktor_x * x_abstand,
-        //     -140 - faktor_y * y_abstand,
-        //     - width_room / 2 + 350 + faktor_z * z_abstand,
-        //     0,
-        //     90,
-        //     90,
-        //     90,
-        //     300,
-        //     // "rgba(160,160,160,1)",
-        //     "rgba(160,160,160,0.01)",
-        //     1,
-        //     // surface_light
-        // ],
     ]
     allSteps.push(...step);
     return allSteps;
@@ -431,21 +394,7 @@ function bruecken() {
                 1,
                 floor
             ],
-            // [
-            //     0 + faktor_x * x_abstand,
-            //     -105 - faktor_y * y_abstand,
-            //     - width_room / 2 + 1000 + faktor_z * z_abstand,
-            //     90,
-            //     0,
-            //     0,
-            //     200,
-            //     1600,
-            //     "rgba(160,160,160,1)",
-            //     1,
-            //     floor
-            // ],
         ]
-        console.log("Brücke")
         allSteps.push(...step);
     }
     return allSteps
@@ -543,7 +492,6 @@ function wuerfel() {
                 floor
             ],
         ]
-        console.log("Brücke")
         allSteps.push(...step);
     }
     return allSteps
@@ -590,18 +538,32 @@ function tunnel() {
                 floor
             ],
             [
-                -100 + faktor_x * x_abstand,
+                -350 + faktor_x * x_abstand,
                 -60 - faktor_y * y_abstand,
                 - width_room / 2 + 500 + faktor_z * z_abstand,
                 0,
                 0,
                 0,
-                1400,
+                900,
                 21,
                 "rgba(0,0,160,1)",
                 1,
                 floor
             ],
+            [
+                350 + faktor_x * x_abstand,
+                -60 - faktor_y * y_abstand,
+                - width_room / 2 + 500 + faktor_z * z_abstand,
+                0,
+                0,
+                0,
+                500,
+                21,
+                "rgba(0,0,160,1)",
+                1,
+                floor
+            ],
+
             [
                 -800 + faktor_x * x_abstand,
                 -60 - faktor_y * y_abstand,
@@ -617,38 +579,38 @@ function tunnel() {
             ],
             [
                 - 400 + faktor_x * x_abstand,
-                22 - faktor_y * y_abstand,
+                25 - faktor_y * y_abstand,
                 - width_room / 2 + 500 + faktor_z * z_abstand,
                 0,
                 0,
                 0,
                 800,
-                142,
+                150,
                 "rgba(160,160,160,1)",
                 1,
                 floor
             ],
             [
                 - 400 + faktor_x * x_abstand,
-                22 - faktor_y * y_abstand,
+                25 - faktor_y * y_abstand,
                 - width_room / 2 + 480 + faktor_z * z_abstand,
                 0,
                 0,
                 0,
                 800,
-                142,
+                150,
                 "rgba(0,0,160,1)",
                 1,
                 floor
             ],
             [
                 - 800 + faktor_x * x_abstand,
-                21.5 - faktor_y * y_abstand,
+                25 - faktor_y * y_abstand,
                 - width_room / 2 + 490 + faktor_z * z_abstand,
                 0,
                 90,
                 90,
-                143,
+                150,
                 20,
                 "rgba(0,0,160,1)",
                 1,
@@ -656,12 +618,12 @@ function tunnel() {
             ],
             [
                 0 + faktor_x * x_abstand,
-                21.5 - faktor_y * y_abstand,
+                25 - faktor_y * y_abstand,
                 - width_room / 2 + 490 + faktor_z * z_abstand,
                 0,
                 90,
                 90,
-                143,
+                150,
                 20,
                 "rgba(0,0,160,1)",
                 1,
@@ -669,12 +631,12 @@ function tunnel() {
             ],
             [
                 100 + faktor_x * x_abstand,
-                21.5 - faktor_y * y_abstand,
+                25 - faktor_y * y_abstand,
                 - width_room / 2 + 490 + faktor_z * z_abstand,
                 0,
                 90,
                 90,
-                143,
+                150,
                 20,
                 "rgba(0,0,160,1)",
                 1,
@@ -683,26 +645,26 @@ function tunnel() {
 
             [
                 350 + faktor_x * x_abstand,
-                22 - faktor_y * y_abstand,
+                25 - faktor_y * y_abstand,
                 - width_room / 2 + 500 + faktor_z * z_abstand,
                 0,
                 0,
                 0,
                 500,
-                142,
+                150,
                 "rgba(0,0,160,1)",
                 1,
                 floor
             ],
             [
                 350 + faktor_x * x_abstand,
-                22 - faktor_y * y_abstand,
+                25 - faktor_y * y_abstand,
                 - width_room / 2 + 480 + faktor_z * z_abstand,
                 0,
                 0,
                 0,
                 500,
-                142,
+                155,
                 "rgba(0,0,160,1)",
                 1,
                 floor
@@ -720,49 +682,20 @@ function tunnel() {
                 1,
                 // floor
             ],
-
-
-            // [
-            //     50 + faktor_x * x_abstand,
-            //     -50 - faktor_y * y_abstand,
-            //     - width_room / 2 + 750 + faktor_z * z_abstand,
-            //     90,
-            //     0,
-            //     0,
-            //     100,
-            //     500,
-            //     "rgba(0,0,160,1)",
-            //     1,
-            //     // floor
-            // ],
-            // [
-            //     0 + faktor_x * x_abstand,
-            //     25 - faktor_y * y_abstand,
-            //     - width_room / 2 + 750 + faktor_z * z_abstand,
-            //     90,
-            //     90,
-            //     0,
-            //     150,
-            //     500,
-            //     "rgba(0,0,160,1)",
-            //     1,
-            //     // floor
-            // ],
-            // [
-            //     100 + faktor_x * x_abstand,
-            //     25 - faktor_y * y_abstand,
-            //     - width_room / 2 + 750 + faktor_z * z_abstand,
-            //     90,
-            //     90,
-            //     0,
-            //     150,
-            //     500,
-            //     "rgba(0,0,160,1)",
-            //     1,
-            //     // floor
-            // ],
+            [
+                -800 + faktor_x * x_abstand,
+                -100 - faktor_y * y_abstand,
+                - width_room / 2 + 350 + faktor_z * z_abstand,
+                0,
+                90,
+                0,
+                300,
+                60,
+                "rgba(251, 251, 251, 1)",
+                1,
+                floor
+            ],
         ]
-        console.log("Brücke")
         allSteps.push(...step);
     }
     return allSteps

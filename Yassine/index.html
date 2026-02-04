@@ -2,12 +2,16 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="style.css">
-</head>
+    <title>3D World</title>
+    <link rel="stylesheet" href="style.css"> </head>
 <body>
-    <div id="red" class="text_container">RED</div>
-    <div id="black" class="text_container">BLACK</div>
-</body>
+    <div id="container">
+        <div id="world">
+            <div id="floor"></div>
+            <div id="wall-back" class="wall"></div>
+            <div id="wall-front" class="wall"></div>
+            <div id="pawn"></div>
+        </div>
+    </div>
+    <script src="script.js"></script> </body>
 </html>

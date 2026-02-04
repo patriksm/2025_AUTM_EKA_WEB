@@ -1,16 +1,76 @@
-#container{
-    position: absolute;
-    width: 1200px;
-    height: 800px;
-    border: 2px solid #000;
-    perspective: 600px;
+/* ---------- Container ---------- */
+#container {
+    width: 100vw;
+    height: 100vh;
     overflow: hidden;
+    background: #111; /* Dark arena */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    perspective: 1000px;
+    position: relative;
 }
 
-#world{
-    position: absolute;
-    width: inherit;
-    height: inherit;
+/* ---------- World (3D environment) ---------- */
+#world {
     transform-style: preserve-3d;
-    transform: rotateY(deg) rotateX(0deg) rotateZ(0deg);
+    width: 0;
+    height: 0;
+}
+
+/* ---------- Crosshair ---------- */
+#crosshair {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #0f0;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 100;
+    pointer-events: none;
+}
+
+/* ---------- Scoreboard ---------- */
+#scoreBoard {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    color: #fb0000;
+    font-size: 24px;
+    z-index: 100;
+    font-family: sans-serif;
+}
+
+/* ---------- Targets (normal) ---------- */
+.target {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    background: red;
+    border-radius: 50%;
+    border: 2px solid black;
+}
+
+/* ---------- Bonus Targets ---------- */
+.bonus-target {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    background: gold;
+    border-radius: 50%;
+    border: 2px solid red;
+}
+
+/* ---------- Arena walls/floor/ceiling ---------- */
+.arena {
+    position: absolute;
+    background-size: cover;
+}
+
+/* ---------- Skybox ---------- */
+.skybox {
+    position: absolute;
+    background-size: cover;
 }

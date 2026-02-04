@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Shooting Game</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div id="loading" class="loading-screen">
+        <div class="spinner"></div>
+        <p>Loading Game...</p>
+    </div>
+
+    <div id="game-container" class="game-container"></div>
+
+    <div class="crosshair">
+        <div class="crosshair-dot"></div>
+    </div>
+    <div class="hit-marker" id="hit-marker"></div>
+    <div class="reload-indicator" id="reload-indicator">RELOADING...</div>
+
+    <div id="hud" class="hud">
+        <div class="hud-section">
+            <div class="hud-item">
+                <i class="fas fa-clock"></i>
+                <span class="timer-value">02:00</span>
+            </div>
+            <div class="hud-item">
+                <i class="fas fa-bullseye"></i>
+                <span class="score-value">0</span>
+            </div>
+        </div>
+        
+        <div class="hud-section">
+            <div class="hud-item">
+                <i class="fas fa-shapes"></i>
+                <span class="objects-value">0</span>
+            </div>
+            <div class="hud-item">
+                <i class="fas fa-bullhorn"></i>
+                <span class="ammo-count">30</span>
+            </div>
+        </div>
+        
+        <div class="controls-hint">
+            <p>Use <kbd>W A S D</kbd> to move | <kbd>Mouse Click</kbd> to shoot | <kbd>R</kbd> to reload</p>
+            <p><kbd>Shift</kbd> to run | <kbd>Space</kbd> to jump</p>
+        </div>
+    </div>
+
+    <div id="game-over" class="game-over-screen">
+        <div class="game-over-content">
+            <h2>Game Over!</h2>
+            <p>Final Score: <span id="final-score" class="final-score">0</span></p>
+            <div class="game-over-buttons">
+                <button id="restart-btn" class="btn">
+                    <i class="fas fa-redo"></i> Restart Game
+                </button>
+                <button id="fullscreen-btn-menu" class="btn">
+                    <i class="fas fa-expand"></i> Fullscreen
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <button id="fullscreen-btn" class="fullscreen-btn">
+        <i class="fas fa-expand"></i>
+    </button>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,59 @@
+#container {
+    position: absolute;
+    width: 100vw;
+    height: 100vh;
+    background-color: black;
+    perspective: 600px;
+    overflow: hidden;
+}
+
+#world {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    transform-style: preserve-3d;
+}
+
+.square {
+    position: absolute;
+}
+
+.objekts {
+    position: absolute;
+}
+
+#pawn {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 20px;
+    height: 20px;
+    border-radius: 50px;
+    background-color: bisque;
+    z-index: 100;
+}
+
+#mansTeksts {
+    position: absolute;
+    color: #0ff;
+    text-shadow: 0 0 5px #0ff, 0 0 10px #0ff, 0 0 20px #0ff;
+    z-index: 1000;
+    top: 10px;
+    left: 10px;
+    font-family: sans-serif;
+    font-weight: bold;
+}
+
+p {
+    margin: 0px;
+    font-size: 60px;
+    font-family: Arial, sans-serif;
+    position: absolute;
+    display: block;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}

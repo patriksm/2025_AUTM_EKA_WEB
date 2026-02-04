@@ -132,6 +132,13 @@ function update() {
             myBullets.push(drawMyBullet(myBulletNumber));
             myBulletsData.push(new player(pawn.x, pawn.y, pawn.z, pawn.rx, pawn.ry, 5, 5, 5));
             myBulletNumber++;
+
+            console.log(myBulletNumber);
+            var data = new FormData();
+            data.append("data", myBulletNumber + '\n');
+            var xhr = (window.XMLHttpRequest) ? new XMLHttpRequest() : new activeXObject("Microsoft.XMLHTTP");
+            xhr.open('post', 'save.php', true);
+            xhr.send(data);
         }
     }
 

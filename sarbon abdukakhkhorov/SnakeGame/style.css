@@ -1,0 +1,98 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
+
+body {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: radial-gradient(circle at center, #1a1a2e 0%, #0f0f1b 100%);
+    font-family: 'Orbitron', sans-serif;
+    color: #fff;
+    overflow: hidden;
+}
+
+#game-container {
+    position: relative;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+    text-align: center;
+}
+
+canvas {
+    border: 3px solid rgba(0, 255, 255, 0.3);
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.1);
+    background-color: #000;
+}
+
+#ui {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    padding: 0 10px;
+}
+
+#score-board,
+#high-score-board {
+    font-size: 20px;
+    text-shadow: 0 0 10px rgba(0, 255, 255, 0.8);
+    color: #0ff;
+}
+
+#overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-radius: 20px;
+    z-index: 10;
+}
+
+#overlay h1 {
+    font-size: 40px;
+    margin-bottom: 20px;
+    color: #ff0055;
+    text-shadow: 0 0 20px #ff0055;
+}
+
+#overlay p {
+    font-size: 18px;
+    margin-bottom: 30px;
+    color: #fff;
+}
+
+button {
+    background: transparent;
+    border: 2px solid #0ff;
+    color: #0ff;
+    padding: 15px 40px;
+    font-size: 20px;
+    font-family: 'Orbitron', sans-serif;
+    cursor: pointer;
+    border-radius: 50px;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+button:hover {
+    background: #0ff;
+    color: #000;
+    box-shadow: 0 0 30px #0ff;
+}
+
+.hidden {
+    display: none !important;
+}

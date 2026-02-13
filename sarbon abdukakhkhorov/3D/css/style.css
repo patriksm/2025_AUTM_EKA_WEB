@@ -1,0 +1,100 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
+
+body {
+    margin: 0;
+    overflow: hidden;
+    font-family: 'Orbitron', 'Segoe UI', sans-serif;
+    /* Sci-fi font */
+    background-color: #000;
+}
+
+#crosshair {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    background-color: transparent;
+    border: 2px solid rgba(0, 255, 255, 0.8);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+    transition: all 0.1s ease;
+}
+
+#ui {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    color: #0ff;
+    font-size: 24px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    text-shadow: 0 0 10px rgba(0, 255, 255, 0.8);
+    pointer-events: none;
+    background: rgba(0, 20, 40, 0.5);
+    padding: 10px 20px;
+    border: 1px solid rgba(0, 255, 255, 0.3);
+    border-radius: 8px;
+    backdrop-filter: blur(5px);
+}
+
+#message,
+#instructions {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #fff;
+    background: rgba(10, 20, 30, 0.85);
+    /* Dark Glass */
+    padding: 40px;
+    border: 1px solid #0ff;
+    border-radius: 15px;
+    text-align: center;
+    box-shadow: 0 0 30px rgba(0, 255, 255, 0.2), inset 0 0 20px rgba(0, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    transition: opacity 0.3s;
+}
+
+#message {
+    display: none;
+}
+
+#instructions {
+    cursor: pointer;
+    animation: float 4s ease-in-out infinite;
+}
+
+#instructions:hover {
+    border-color: #fff;
+    box-shadow: 0 0 50px rgba(0, 255, 255, 0.4);
+}
+
+h1 {
+    font-size: 32px;
+    margin-bottom: 20px;
+    color: #0ff;
+    text-shadow: 0 0 10px #0ff;
+}
+
+p {
+    font-size: 18px;
+    color: #ccc;
+    line-height: 1.6;
+}
+
+@keyframes float {
+    0% {
+        transform: translate(-50%, -50%) translateY(0px);
+    }
+
+    50% {
+        transform: translate(-50%, -50%) translateY(-10px);
+    }
+
+    100% {
+        transform: translate(-50%, -50%) translateY(0px);
+    }
+}

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sci-Fi Maze 3D</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <div id="crosshair"></div>
+    <div id="ui">Coins: <span id="score">0</span> / 8</div>
+    <div id="instructions">
+        <h1>SARBON ABDUKAKHKHOROV</h1>
+        <p>START THE GAME</p>
+    </div>
+    <div id="message">
+        <h1 id="msg-text">YOU WIN THE GAME</h1>
+        <p style="text-transform: lowercase;">sarbon abdukakhkhorov</p>
+        <p>Press F5 to restart protocol</p>
+    </div>
+
+    <!-- Load Three.js from CDN -->
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+            }
+        }
+    </script>
+    <script type="module" src="js/main.js"></script>
+</body>
+
+</html>
